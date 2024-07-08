@@ -6,21 +6,7 @@
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTop4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarTop4">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown">
-                 <a href="#" class="nav-link">   English </a>
-                
-            </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link"> USD </a>
-            </li>
-        </ul>
-        <ul class="navbar-nav">
-            <li><a href="#" class="nav-link"> <i class="fa fa-envelope"></i> Email </a></li>
-            <li><a href="#" class="nav-link"> <i class="fa fa-phone"></i> Call us </a></li>
-        </ul> <!-- list-inline //  -->
-      </div> <!-- navbar-collapse .// -->
+      
     </div> <!-- container //  -->
     </nav>
     
@@ -61,13 +47,29 @@
         </div> <!-- col.// -->
         <div class="col-lg-3 col-sm-6 col-8 order-2 order-lg-3">
                     <div class="d-flex justify-content-end mb-3 mb-lg-0">
+
+                        {% if user.id is None %}
+
                         <div class="widget-header">
                             <small class="title text-muted">Welcome guest!</small>
                             <div> 
-                                <a href="./signin.html">Sign in</a> <span class="dark-transp"> | </span>
-                                <a href="./register.html"> Register</a>
+                                <a href="{% url 'login' %}">Log in</a> <span class="dark-transp"> | </span>
+                                <a href="{% url 'register' %}"> Register</a>
                             </div>
                         </div>
+
+                        {% else %}
+
+                        <div class="widget-header">
+                            <small class="title text-muted">Welcome {{user.first_name}}!</small>
+                            <div> 
+                                <a href="{% url 'home' %}"> Dashboard </a> <span class="dark-transp"> | </span>
+                                <a href="{% url 'logout' %}"> Logout</a>
+                            </div>
+                        </div>
+
+                        {% endif %}
+
                         <a href="./cart.html" class="widget-header pl-3 ml-3">
                             <div class="icon icon-sm rounded-circle border"><i class="fa fa-shopping-cart"></i></div>
                             <span class="badge badge-pill badge-danger notify">0</span>

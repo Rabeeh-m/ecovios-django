@@ -2,9 +2,13 @@ from django.shortcuts import get_object_or_404, render
 from .models import Product
 from category.models import Category
 from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_control
 
 # Create your views here.
 
+@login_required(login_url='login')
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def store(request, category_slug=None):
     categories = None
     products = None
@@ -35,6 +39,8 @@ def store(request, category_slug=None):
     return render(request, 'store/store.html', context)
 
 
+@login_required(login_url='login')
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def product_detail(request, category_slug, product_slug):
 
     try:

@@ -1,5 +1,11 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+
+from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your models here.
 
@@ -72,4 +78,15 @@ class Account(AbstractBaseUser):
     
     def has_module_perms(self, add_label):
         return True
+    
 
+
+class OTP(models.Model):
+    user = models.OneToOneField(Account, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    def is_valid(self):
+        return timezone.now() < self.expires_at
+    
