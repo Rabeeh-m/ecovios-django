@@ -1,4 +1,5 @@
 
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import Product, ReviewRating
 from category.models import Category
@@ -20,7 +21,7 @@ def store(request, category_slug=None):
         categories = get_object_or_404(Category, slug=category_slug)
         products = Product.objects.filter(category=categories, is_available=True)
 
-        paginator = Paginator(products,1)
+        paginator = Paginator(products,6)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
 
@@ -45,20 +46,21 @@ def store(request, category_slug=None):
 @login_required(login_url='login')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def product_detail(request, category_slug, product_slug):
-
     try:
         single_product = Product.objects.get(category__slug=category_slug, slug=product_slug)
-    except Exception as e:
-        raise e
+    except Product.DoesNotExist:
+        raise Http404("Product does not exist")
 
-
-    # Get the review
+    # Get the reviews
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
 
-    
+    # Get related products
+    related_products = Product.objects.filter(category=single_product.category).exclude(id=single_product.id)[:4]
+
     context = {
-        'single_product' : single_product,
-        'reviews' : reviews,
+        'single_product': single_product,
+        'reviews': reviews,
+        'related_products': related_products,
     }
 
     return render(request, 'store/product_detail.html', context)

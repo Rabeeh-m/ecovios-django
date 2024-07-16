@@ -22,10 +22,15 @@
 	<div class="row no-gutters">
 		<aside class="col-md-6">
 <article class="gallery-wrap"> 
-	<div class="img-big-wrap">
-	   <a href="#"><img src="{{ single_product.images.url }}"></a>
+	<div class="img-big-wrap" style="overflow: hidden;">
+	   <a href="#"><img src="{{ single_product.images.url }}" ></a>
 	</div> <!-- img-big-wrap.// -->
-	
+	<!-- <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+		<a href="#"><img src="{{ single_product.images.url }}" style="transition: transform 0.2s ease-in-out; width: 50%;"></a>
+		<a href="#"><img src="{{ single_product.images.url }}" style="transition: transform 0.2s ease-in-out; width: 50%;"></a>
+		<a href="#"><img src="{{ single_product.images.url }}" style="transition: transform 0.2s ease-in-out; width: 50%;"></a>
+		<a href="#"><img src="{{ single_product.images.url }}" style="transition: transform 0.2s ease-in-out; width: 50%;"></a>
+	</div> -->
 </article> <!-- gallery-wrap .end// -->
 		</aside>
 		<main class="col-md-6 border-left">
@@ -104,7 +109,33 @@
 	</div> <!-- row.// -->
 </div> <!-- card.// -->
 <!-- ============================ COMPONENT 1 END .// ================================= -->
+<br>
+<br>
 
+<!-- ============================ RELATED PRODUCTS ================================= -->
+<div class="related-products">
+    <h3>Related Products</h3>
+    <div class="row">
+        {% for product in related_products %}
+            <div class="col-md-3">
+                <div class="card">
+                    <a href="{% url 'product_detail' product.category.slug product.slug %}">
+                        <img src="{{ product.images.url }}" class="card-img-top" alt="{{ product.product_name }}">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.product_name }}</h5>
+                        <p class="card-text">₹ {{ product.price }}</p>
+                        <a href="{% url 'product_detail' product.category.slug product.slug %}" class="btn btn-primary">View Product</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- ============================ RELATED PRODUCTS END ================================= -->
+
+<br>
+<br>
 <br>
 
 <div class="row">
@@ -212,5 +243,17 @@
 </div> <!-- container .//  -->
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.4.0/dist/panzoom.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const imgBigWrap = document.querySelector('.img-big-wrap');
+    const panzoom = Panzoom(imgBigWrap, {
+        maxScale: 4,
+        contain: 'outside'
+    });
+    imgBigWrap.addEventListener('wheel', panzoom.zoomWithWheel);
+});
+</script>
 
 {% endblock %}

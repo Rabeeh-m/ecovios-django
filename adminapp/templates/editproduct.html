@@ -1,0 +1,222 @@
+{% extends 'ahome.html' %}
+
+{% block body %}
+<style>
+    /* Custom styles for edit product form */
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 20px;
+        background-color: #2d3035;
+        color: white;
+    }
+
+    .page-content {
+        padding: 20px;
+        position: relative; /* Ensure relative positioning for absolute elements */
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #343a40;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"], input[type="number"], textarea, input[type="file"], select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 3px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        color: #495057;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        outline: none;
+        border: none;
+        border-radius: 3px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .error {
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="page-content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Edit Product: {{ product.product_name }}</h2>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productNameInput = document.getElementById('id_product_name');
+            const slugInput = document.getElementById('id_slug');
+            const priceInput = document.getElementById('id_price');
+            const stockInput = document.getElementById('id_stock');
+
+            productNameInput.addEventListener('input', function() {
+                const productName = productNameInput.value;
+                const slug = slugify(productName);
+                slugInput.value = slug;
+            });
+
+            priceInput.addEventListener('input', function() {
+                if (priceInput.value < 0) {
+                    priceInput.value = ''; // Clear input if negative number entered
+                }
+            });
+
+            stockInput.addEventListener('input', function() {
+                if (stockInput.value < 0) {
+                    stockInput.value = ''; // Clear input if negative number entered
+                }
+            });
+
+            function slugify(text) {
+                return text.toString().toLowerCase()
+                    .replace(/\s+/g, '-')        // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+                    .replace(/\-\-+/g, '-')      // Replace multiple - with single -
+                    .replace(/^-+/, '')          // Trim - from start of text
+                    .replace(/-+$/, '');         // Trim - from end of text
+            }
+        });
+    </script>
+
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_product_name">Product Name</label>
+                {{ form.product_name }}
+                {% if form.product_name.errors %}
+                    <p class="error">{{ form.product_name.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_slug">Slug</label>
+                {{ form.slug }}
+                {% if form.slug.errors %}
+                    <p class="error">{{ form.slug.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_price">Price</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                    <p class="error">{{ form.price.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_stock">Stock</label>
+                {{ form.stock }}
+                {% if form.stock.errors %}
+                    <p class="error">{{ form.stock.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_description">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <p class="error">{{ form.description.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_category">Category</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                    <p class="error">{{ form.category.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_images">Images</label>
+                {{ form.images }}
+                {% if form.images.errors %}
+                    <p class="error">{{ form.images.errors }}</p>
+                {% endif %}
+                {% if product.images %}
+                    <label>Current Image:</label>
+                    <p class="image-url"><a href="{{ product.images.url }}" target="_blank">{{ product.images.url }}</a></p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_image1">Image 1</label>
+                {{ form.image1 }}
+                {% if form.image1.errors %}
+                    <p class="error">{{ form.image1.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_image2">Image 2</label>
+                {{ form.image2 }}
+                {% if form.image2.errors %}
+                    <p class="error">{{ form.image2.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_is_available">Is Available</label>
+                {{ form.is_available }}
+                {% if form.is_available.errors %}
+                    <p class="error">{{ form.is_available.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Update Product</button>
+                <a href="{% url 'productlist' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

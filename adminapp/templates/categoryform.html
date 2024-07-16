@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if category %}Edit Category{% else %}Add Category{% endif %}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-container h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>{% if category %}Edit Category{% else %}Add Category{% endif %}</h1>
+            
+            {% if messages %}
+                <div id="errorMessages" class="alert alert-danger">
+                    <ul>
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <form method="post" enctype="multipart/form-data" id="categoryForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="category_name">Category Name:</label>
+                    <input type="text" class="form-control" name="category_name" id="category_name" value="{% if category %}{{ category.category_name }}{% endif %}">
+                </div>
+                <div class="form-group">
+                    <label for="slug">Slug:</label>
+                    <input type="text" class="form-control" name="slug" id="slug" value="{% if category %}{{ category.slug }}{% endif %}">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea class="form-control" name="description" id="description">{% if category %}{{ category.description }}{% endif %}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cat_image">Category Image:</label>
+                    <input type="file" class="form-control-file" name="cat_image" id="cat_image">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save</button>
+              
+            </form>
+            <a href="{% url 'categorylist' %}" class="btn btn-sm btn-dark">Back</a>
+        </div>
+       
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.getElementById("categoryForm");
+            var errorMessages = document.getElementById("errorMessages");
+            
+            // Hide error messages after 3 seconds
+            if (errorMessages) {
+                setTimeout(function() {
+                    errorMessages.style.display = "none";
+                }, 3000); // 3000 milliseconds = 3 seconds
+            }
+            
+            // Function to move focus to next field on Enter key press
+            function moveFocusToNextField(currentElement, fields) {
+                for (var i = 0; i < fields.length; i++) {
+                    if (fields[i] === currentElement) {
+                        if (i + 1 < fields.length) {
+                            fields[i + 1].focus();
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            // Event listeners for input fields
+            var inputs = form.getElementsByTagName("input");
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener("keypress", function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        moveFocusToNextField(this, inputs);
+                    }
+                });
+            }
+            
+            // Event listeners for textareas
+            var textareas = form.getElementsByTagName("textarea");
+            for (var i = 0; i < textareas.length; i++) {
+                textareas[i].addEventListener("keypress", function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        moveFocusToNextField(this, textareas);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

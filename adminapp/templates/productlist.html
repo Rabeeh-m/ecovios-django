@@ -1,0 +1,340 @@
+{% extends 'ahome.html' %}
+{% load static %}
+
+{% block body %}
+<style>
+    /* Custom styles for the product list */
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 20px;
+        background-color: #2d3035;
+        color: white;
+    }
+
+    .page-content {
+        padding: 20px;
+        position: relative; /* Ensure relative positioning for absolute elements */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        border: 1px solid #fff;
+        padding: 12px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #343a40;
+        color: white;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #2d3035;
+    }
+
+    .actions {
+        white-space: nowrap;
+    }
+
+    .actions a {
+        color: #ffffff; /* Change action link color */
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .add-product-btn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999; /* Ensure button stays on top */
+    }
+
+    .message {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+    }
+
+    .message.success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .message.error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .message.info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }
+
+    .hidden {
+        opacity: 0;
+    }
+
+    .pagination-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+
+    .page-item {
+        position: relative;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: #007bff;
+        background-color:  #2d3035;
+        
+    }
+
+    .page-link {
+        position: relative;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: #007bff;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+    }
+
+    .page-link:hover {
+        z-index: 2;
+        color: #0056b3;
+        text-decoration: none;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    .page-item.active .page-link {
+        z-index: 1;
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: #2d3035;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        color: white;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modal-header, .modal-footer {
+        padding: 10px;
+        text-align: center;
+    }
+
+    .modal-body {
+        padding: 2px 16px;
+    }
+
+    .page-content{
+        padding: 0px;
+    }
+    .page-header{
+        margin-bottom: 0px;
+    }
+</style>
+
+<div class="page-content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Product List</h2>
+        </div>
+    </div>
+
+    <div style="overflow-x:auto;">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.product_name }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>{{ product.category.category_name }}</td>
+                    <td class="actions">
+                        <a href="{% url 'editproduct' product.id %}" class="btn btn-sm btn-info">Edit</a>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('{{ product.id }}')">Delete</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No products found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if products.has_other_pages %}
+        <div class="pagination-container">
+            <ul class="pagination justify-content-center">
+                {% if products.has_previous %}
+                <li class="page-item">
+                    <a href="?page={{ products.previous_page_number }}" class="page-link">&laquo; Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo; Previous</span>
+                </li>
+                {% endif %}
+
+                {% for i in products.paginator.page_range %}
+                {% if products.number == i %}
+                <li class="page-item active">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a href="?page={{ i }}" class="page-link">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                <li class="page-item">
+                    <a href="?page={{ products.next_page_number }}" class="page-link">Next &raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next &raquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    
+    <a href="{% url 'addproduct' %}" class="btn btn-info add-product-btn">Add Product</a>
+</div>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Confirm Deletion</h2>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete this product?</p>
+        </div>
+        <div class="modal-footer">
+            <button id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</button>
+            <button id="cancelBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // Get the cancel button
+    var cancelBtn = document.getElementById("cancelBtn");
+
+    // When the user clicks the button, open the modal 
+    function confirmDelete(productId) {
+        modal.style.display = "block";
+        var confirmBtn = document.getElementById("confirmDeleteBtn");
+        confirmBtn.onclick = function() {
+            window.location.href = "{% url 'deleteproduct' 0 %}".replace(0, productId);
+        }
+    }
+
+    // When the user clicks on <span> (x) or cancel button, close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    cancelBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}
+
+
+
+

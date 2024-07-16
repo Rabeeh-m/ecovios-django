@@ -38,7 +38,7 @@ def register(request):
             user.save()
 
             otp_code = generate_otp()
-            expires_at = timezone.now() + timedelta(minutes=10)
+            expires_at = timezone.now() + timedelta(minutes=3)
             otp = OTP.objects.create(user=user, otp=otp_code, expires_at=expires_at)
             send_otp(email, otp_code)
 
@@ -103,14 +103,24 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
 
-        user = auth.authenticate(email=email, password=password)
+        try:
+            user = Account.objects.get(email=email)
+        except Account.DoesNotExist:
+            user = None
 
-        if user is not None:
-            auth.login(request, user)
-            return redirect('home')
-        else:
-            messages.error(request, 'Invalid login credentials')
-            return redirect('login')
+        
+
+        if user:
+            if not user.is_active:
+                messages.error(request, 'Your account is blocked. Please contact support.')
+            else:
+                user = auth.authenticate(email=email, password=password)
+                if user is not None:
+                    auth.login(request, user)
+                    return redirect('home')
+                else:
+                    messages.error(request, 'Invalid login credentials')
+                    return redirect('login')
 
     return render(request, 'accounts/login.html')
 

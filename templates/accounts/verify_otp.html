@@ -12,6 +12,9 @@
         body {
             padding: 20px;
         }
+        #resendButton {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -31,9 +34,9 @@
                 <form method="post" action="{% url 'resend_otp' user_id=user_id %}">
                     {% csrf_token %}
                     <br><br>
-                <p id="otpTimer" class="text-center mt-3">Time remaining: <span id="countdown">03:00</span> seconds</p>
+                    <p id="otpTimer" class="text-center mt-3">Time remaining: <span id="countdown">03:00</span> seconds</p>
                     
-                    <button type="submit" class="btn btn-link btn-block">Resend OTP</button>
+                    <button type="submit" class="btn btn-link btn-block" id="resendButton">Resend OTP</button>
                 </form>
                 {% for message in messages %}
                     <p class="text-center">{{ message }}</p>
@@ -52,7 +55,7 @@
         // Countdown timer function
         function startTimer(duration, display) {
             var timer = duration, minutes, seconds;
-            setInterval(function () {
+            var interval = setInterval(function () {
                 minutes = parseInt(timer / 60, 10);
                 seconds = parseInt(timer % 60, 10);
 
@@ -62,18 +65,18 @@
                 display.textContent = minutes + ":" + seconds;
 
                 if (--timer < 0) {
-                    timer = 0; // Set timer to zero or handle timeout action
+                    clearInterval(interval);
+                    document.getElementById('resendButton').style.display = 'block';
                 }
             }, 1000);
         }
 
         // Start the countdown when page loads
         window.onload = function () {
-            var fiveMinutes = 60 * 3; // Change this to adjust countdown time in seconds
+            var threeMinutes = 60 * 3; // Change this to adjust countdown time in seconds
             var display = document.getElementById("countdown");
-            startTimer(fiveMinutes, display);
+            startTimer(threeMinutes, display);
         };
     </script>
 </body>
 </html>
-

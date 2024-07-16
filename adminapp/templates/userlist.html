@@ -1,0 +1,108 @@
+{% extends 'ahome.html' %}
+
+{% load static %}
+
+
+{% block body %}
+<style>
+    body {
+        background-color: #2d3035; /* Set background color */
+        color: white; /* Set text color */
+        
+        
+    }
+    .page-header{
+        margin-bottom: -23px;
+    }
+   
+
+</style>
+
+<div class="page-content">
+    <div class="page-header">
+      <div class="container-fluid">
+        <h2 class="h5 no-margin-bottom">Users List</h2>
+      </div>
+    </div>
+
+<div class="container mt-4">
+   
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_active %}
+                        <span class="badge badge-success">Active</span>
+                        {% else %}
+                        <span class="badge badge-danger">Blocked</span>
+                        {% endif %}
+                        {% if user.last_login %}
+                        <br>
+                        <small>Last Login: {{ user.last_login }}</small>
+                        {% endif %}
+                        {% if user.date_joined %}
+                        <br>
+                        <small>Joined: {{ user.date_joined }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-{% if user.is_active %}danger{% else %}success{% endif %}" data-toggle="modal" data-target="#confirmModal{{ user.id }}">
+                                {% if user.is_active %}Block{% else %}Activate{% endif %}
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Modal for Confirmation -->
+                <div class="modal fade" id="confirmModal{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel{{ user.id }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmModalLabel{{ user.id }}">
+                                    {% if user.is_active %}Confirm Block{% else %}Confirm Activation{% endif %}
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                {% if user.is_active %}
+                                Are you sure you want to block this user?
+                                {% else %}
+                                Are you sure you want to activate this user?
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <form action="{% url 'update_status' user.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-{% if user.is_active %}danger{% else %}success{% endif %}">
+                                        {% if user.is_active %}Block{% else %}Activate{% endif %}
+                                    </button>
+                                    <input type="hidden" name="status" value="{% if user.is_active %}blocked{% else %}active{% endif %}">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock body %}

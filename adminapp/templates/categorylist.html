@@ -1,0 +1,224 @@
+{% extends 'ahome.html' %}
+
+{% load static %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #2d3035;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: -19px;
+        }
+        .table thead th {
+            color: white;
+        }
+        .table tbody td {
+            color: white;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .btn-dark {
+            background-color: #343a40;
+            border-color: #343a40;
+        }
+        .btn-dark:hover {
+            background-color: #23272b;
+            border-color: #1d2124;
+        }
+        .alert-dismissible .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 1.25rem 1rem;
+            color: inherit;
+        }
+        .table.table.table-bordered{
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-content">
+        <div class="page-header">
+          <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Category List</h2>
+          </div>
+        </div>
+    <div class="container">
+        {% if messages %}
+            <div class="alert alert-dismissible">
+                {% for message in messages %}
+                    {% if "login" not in message.tags %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <button type="button" class="btn btn-sm btn-primary mb-3" data-toggle="modal" data-target="#addModal">Add Category</button>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Category Name</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ category.category_name }}</td>
+                        <td>{{ category.description }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editModal{{ category.id }}">Edit</button>
+                                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal{{ category.id }}">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel{{ category.id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel{{ category.id }}">Edit Category</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-container">
+                                        <form method="post" enctype="multipart/form-data" id="categoryForm{{ category.id }}" action="{% url 'editcategory' category.id %}">
+                                            {% csrf_token %}
+                                            <div class="form-group">
+                                                <label for="category_name{{ category.id }}">Category Name:</label>
+                                                <input type="text" class="form-control" name="category_name" id="category_name{{ category.id }}" value="{{ category.category_name }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="slug{{ category.id }}">Slug:</label>
+                                                <input type="text" class="form-control" name="slug" id="slug{{ category.id }}" value="{{ category.slug }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="description{{ category.id }}">Description:</label>
+                                                <textarea class="form-control" name="description" id="description{{ category.id }}">{{ category.description }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="cat_image{{ category.id }}">Category Image:</label>
+                                                <p>Currently: <a href="{{ category.cat_image.url }}">{{ category.cat_image.url }}</a> <input type="checkbox" name="clear_image" id="clear_image{{ category.id }}"> Clear</p>
+                                                <input type="file" class="form-control-file" name="cat_image" id="cat_image{{ category.id }}">
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-block">Save</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delete Modal -->
+                    <div class="modal fade" id="deleteModal{{ category.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ category.id }}" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ category.id }}">Confirm Delete</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete this category?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <form action="{% url 'deletecategory' category.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-container">
+                        <form method="post" enctype="multipart/form-data" id="addCategoryForm" action="{% url 'addcategory' %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="category_name">Category Name:</label>
+                                <input type="text" class="form-control" name="category_name" id="category_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="slug">Slug:</label>
+                                <input type="text" class="form-control" name="slug" id="slug">
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description:</label>
+                                <textarea class="form-control" name="description" id="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="cat_image">Category Image:</label>
+                                <input type="file" class="form-control-file" name="cat_image" id="cat_image">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}
