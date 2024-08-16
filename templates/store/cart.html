@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+{% include 'includes/alerts.html' %}
+<div class="container">
+{% if not cart_items %}
+    <h2 class="text-center">Your Shopping Cart is Empty</h2>
+    <br>
+    <div class="text-center">
+        <a href="{% url 'store' %}" class="btn btn-primary">Continue Shopping</a>
+    </div>
+{% else %}
+<div class="row">
+    <aside class="col-lg-9">
+        <div class="card">
+            <table class="table table-borderless table-shopping-cart">
+                <thead class="text-muted">
+                    <tr class="small text-uppercase">
+                        <th scope="col">Product</th>
+                        <th scope="col" width="120">Quantity</th>
+                        <th scope="col" width="120">Price</th>
+                        <th scope="col" class="text-right" width="200"> </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cart_item in cart_items %}
+                    <tr>
+                        <td>
+                            <figure class="itemside align-items-center">
+                                <div class="aside"><img src="{{ cart_item.product.images.url }}" class="img-sm"></div>
+                                <figcaption class="info">
+                                    <a href="{{ cart_item.product.get_url }}" class="title text-dark">{{ cart_item.product.product_name }}</a>
+                                    <p class="text-muted small">Color <br> Size</p>
+                                </figcaption>
+                            </figure>
+                        </td>
+                        <td> 
+                            <div class="col"> 
+                                <div class="input-group input-spinner">
+                                    <div class="input-group-prepend">
+                                        <a href="#" class="btn btn-light btn-decrease" id="btn-decrease-{{ cart_item.product.id }}" data-url="{% url 'remove_cart' cart_item.product.id %}" type="button"> <i class="fa fa-minus"></i> </a>
+                                    </div>
+                                    <input type="text" class="form-control input-quantity" id="input-quantity-{{ cart_item.product.id }}" value="{{ cart_item.quantity }}" readonly>
+                                    <div class="input-group-append">
+                                        <a href="#" class="btn btn-light btn-increase" id="btn-increase-{{ cart_item.product.id }}" data-url="{% url 'add_cart' cart_item.product.id %}" type="button"> <i class="fa fa-plus"></i> </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td> 
+                            <div class="price-wrap"> 
+                                <var class="price">₹ {{ cart_item.sub_total }}</var> 
+                                <small class="text-muted">₹ {{ cart_item.product.price }} each </small> 
+                            </div>
+                        </td>
+                        <td class="text-right"> 
+                            <a href="{% url 'remove_cart_item' cart_item.product.id %}" class="btn btn-danger"> Remove</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </aside>
+    <aside class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <dl class="dlist-align">
+                    <dt>Total price:</dt>
+                    <dd class="text-right" id="total_price">₹ {{ total }}</dd>
+                </dl>
+                
+                <dl class="dlist-align">
+                    <dt>Coupon Discount:</dt>
+                    <dd class="text-right" style="color: green;" id="discount">- ₹ {{ discount }}</dd>
+                </dl>
+                
+                <dl class="dlist-align">
+                    <dt>Total:</dt>
+                    <dd class="text-right text-dark b"><strong id="grand_total">₹ {{ grand_total }}</strong></dd>
+                </dl>
+                
+                <hr>
+
+
+				<!-- Apply Coupon Form -->
+                <form id="apply_coupon_form" action="{% url 'apply_coupon' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="coupon_code">Have a coupon?</label>
+                        <div class="input-group">
+                            <input type="text" id="coupon_code" name="code" class="form-control" placeholder="Coupon code" required>
+                            <span class="input-group-append">
+                                <button class="btn btn-primary" type="submit">Apply</button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Remove Coupon Form -->
+                <form id="remove_coupon_form" action="{% url 'remove_coupon' %}" method="post">
+                    {% csrf_token %}
+                    {% if coupon %}
+                    <button class="btn btn-danger btn-block" type="submit">Remove Coupon</button>
+                    {% endif %}
+                </form>
+
+
+                <p class="text-center mb-3" style="margin-top: 10px;">
+                    <img src="{% static 'images/misc/payments.png' %}" height="26">
+                </p>
+                <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
+                <a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endif %}
+</div>
+</section>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function(){
+    $('.btn-increase').click(function(e){
+        e.preventDefault();
+        var url = $(this).data('url');
+        var button = $(this);
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                button.closest('tr').find('.input-quantity').val(response.quantity);
+                button.closest('tr').find('.price-wrap var.price').text('₹ ' + response.sub_total);
+                
+                // Update total price, grand total, and discount
+                $('#total_price').text('₹ ' + response.total);
+                $('#grand_total').text('₹ ' + response.grand_total);
+                $('#discount').text('- ₹ ' + response.discount);
+            }
+        });
+    });
+
+    $('.btn-decrease').click(function(e){
+        e.preventDefault();
+        var url = $(this).data('url');
+        var button = $(this);
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(response){
+                if(response.quantity > 0){
+                    button.closest('tr').find('.input-quantity').val(response.quantity);
+                    button.closest('tr').find('.price-wrap var.price').text('₹ ' + response.sub_total);
+                } else {
+                    button.closest('tr').remove();  // remove row if quantity is 0
+                }
+                
+                // Update total price, grand total, and discount
+                $('#total_price').text('₹ ' + response.total);
+                $('#grand_total').text('₹ ' + response.grand_total);
+                $('#discount').text('- ₹ ' + response.discount);
+            }
+        });
+    });
+});
+
+
+
+
+
+
+$(document).ready(function(){
+    // Handle Apply Coupon Form
+    $('#apply_coupon_form').on('submit', function(e){
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+        var data = form.serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function(response){
+                // Update cart totals with response data
+                $('#total_price').text('₹ ' + response.total);
+                $('#discount').text('- ₹ ' + response.discount);
+                $('#grand_total').text('₹ ' + response.grand_total);
+                if (response.coupon_applied) {
+                    $('#remove_coupon_form').show(); // Show the remove coupon button if coupon is applied
+                } else {
+                    $('#remove_coupon_form').hide(); // Hide the remove coupon button if no coupon
+                }
+                // Optionally display a success message
+                alert(response.message);
+            },
+            error: function(){
+                alert('An error occurred while applying the coupon.');
+            }
+        });
+    });
+
+    // Handle Remove Coupon Form
+    $('#remove_coupon_form').on('submit', function(e){
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+        var data = form.serialize();
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function(response){
+                // Update cart totals with response data
+                $('#total_price').text('₹ ' + response.total);
+                $('#discount').text('- ₹ ' + response.discount);
+                $('#grand_total').text('₹ ' + response.grand_total);
+                $('#remove_coupon_form').hide(); // Hide the remove coupon button
+                // Optionally display a success message
+                alert(response.message);
+            },
+            error: function(){
+                alert('An error occurred while removing the coupon.');
+            }
+        });
+    });
+});
+</script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to update button states
+        function updateButtonStates(productId) {
+            const quantityInput = document.getElementById(`input-quantity-${productId}`);
+            const decreaseButton = document.getElementById(`btn-decrease-${productId}`);
+            const quantity = parseInt(quantityInput.value, 10);
+
+            if (quantity <= 1) {
+                decreaseButton.classList.add('disabled');
+                decreaseButton.setAttribute('aria-disabled', 'true');
+            } else {
+                decreaseButton.classList.remove('disabled');
+                decreaseButton.removeAttribute('aria-disabled');
+            }
+        }
+
+        // Initialize button states on page load
+        const quantityInputs = document.querySelectorAll('.input-quantity');
+        quantityInputs.forEach(function (input) {
+            const productId = input.id.split('-').pop();
+            updateButtonStates(productId);
+        });
+
+        // Event listener for increase and decrease buttons
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('.btn-decrease') || event.target.closest('.btn-increase')) {
+                const button = event.target.closest('a');
+                const productId = button.id.split('-').pop();
+                const quantityInput = document.getElementById(`input-quantity-${productId}`);
+                const quantity = parseInt(quantityInput.value, 10);
+
+                // Update button states when quantity changes
+                updateButtonStates(productId);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

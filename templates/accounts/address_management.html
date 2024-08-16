@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Address Management</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .form-container {
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: .375rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .table th, .table td {
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        .form-heading, .address-heading {
+            font-size: 1.5rem;
+        }
+        .btn {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% include 'includes/alerts.html' %}
+    <div class="row">
+        <!-- Add/Edit Address Form -->
+        <div class="col-md-6">
+            <div class="form-container">
+                <h2 class="form-heading text-center mb-4"><strong>{% if address %}Edit{% else %}Add{% endif %} Address</strong></h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_first_name">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_last_name">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_phone_number">Phone Number</label>
+                                {{ form.phone_number }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_address_line_1">Address Line 1</label>
+                                {{ form.address_line_1 }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_address_line_2">Address Line 2</label>
+                                {{ form.address_line_2 }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_city">City (Town)</label>
+                                {{ form.city }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_state">State (Province)</label>
+                                {{ form.state }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_country">Country</label>
+                                {{ form.country }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" name="{% if address %}edit{% else %}add{% endif %}" class="btn btn-primary">
+                            {% if address %}Save Changes{% else %}Add Address{% endif %}
+                        </button>
+                        {% if address %}
+                            <a href="{% url 'address_management' %}" class="btn btn-secondary ml-2">Cancel</a>
+                        {% endif %}
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        
+        <!-- Saved Addresses -->
+        <div class="col-md-6">
+            <div class="form-container">
+                <h2 class="address-heading text-center mb-4"><strong>Your Addresses</strong></h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for address in addresses %}
+                            <tr>
+                                <td>{{ address.full_address }}</td>
+                                <td>
+                                    <div class="mb-2">
+                                    <a href="{% url 'address_management_with_id' address.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                    </div>
+
+                                    <div>
+                                    <form action="{% url 'address_management_with_id' address.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" name="delete" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center">No addresses found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock %}

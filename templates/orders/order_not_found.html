@@ -1,0 +1,15 @@
+<!-- order_not_found.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+    <div class="container">
+        <h4 class="text-center mb-4" style="color: red;">Order Not Found</h4>
+        <p class="text-center">The order with number {{ order_number }} does not exist or you do not have permission to cancel it.</p>
+        <div class="text-center">
+            <a href="{% url 'order_management' %}" class="btn btn-primary">Back to Order Management</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

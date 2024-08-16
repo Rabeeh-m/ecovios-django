@@ -7,7 +7,12 @@
 <!-- ========================= SECTION PAGETOP ========================= -->
 <section class="section-pagetop bg">
     <div class="container">
+
+    {% if 'search' in request.path %}
+    <h2 class="title-page">Search Result</h2>
+    {% else %}
         <h2 class="title-page">Our Store</h2>
+    {% endif %}
         
     </div> <!-- container //  -->
 </section>
@@ -41,79 +46,66 @@
                 </div> <!-- card-body.// -->
             </div>
         </article> <!-- filter-group  .// -->
-        <article class="filter-group">
+        
+
+        <article>
             <header class="card-header">
-                <a href="#" data-toggle="collapse" data-target="#collapse_4" aria-expanded="true" class="">
+                <a href="#" data-toggle="collapse" data-target="#collapse_2" aria-expanded="true" class="">
                     <i class="icon-control fa fa-chevron-down"></i>
-                    <h6 class="title">Sizes </h6>
+                    <h6 class="title">Sort</h6>
                 </a>
             </header>
-            <div class="filter-content collapse show" id="collapse_4" style="">
-                <div class="card-body">
-                  <label class="checkbox-btn">
-                    <input type="checkbox">
-                    <span class="btn btn-light"> XS </span>
-                  </label>
-    
-                  <label class="checkbox-btn">
-                    <input type="checkbox">
-                    <span class="btn btn-light"> SM </span>
-                  </label>
-    
-                  <label class="checkbox-btn">
-                    <input type="checkbox">
-                    <span class="btn btn-light"> LG </span>
-                  </label>
-    
-                  <label class="checkbox-btn">
-                    <input type="checkbox">
-                    <span class="btn btn-light"> XXL </span>
-                  </label>
-            </div><!-- card-body.// -->
+            <div class="filter-content collapse show" id="collapse_2">
+            
+            <div class="filter-wrap d-flex justify-content-between align-items-center flex-wrap">
+                <form method="get" class="d-flex align-items-center " ">
+                    <select name="sort" class="form-select form-select-sm" aria-label=".form-select-sm example" style="border-radius: 0;padding: 2px 0;">
+                        <option value="" {% if not sort_option %}selected{% endif %}>Default Sorting</option>
+                        <option value="price_low" {% if sort_option == 'price_low' %}selected{% endif %}>Price, low to high</option>
+                        <option value="price_high" {% if sort_option == 'price_high' %}selected{% endif %}>Price, high to low</option>
+                        <option value="name_a_z" {% if sort_option == 'name_a_z' %}selected{% endif %}>Name, A-Z</option>
+                        <option value="name_z_a" {% if sort_option == 'name_z_a' %}selected{% endif %}>Name, Z-A</option>
+                    </select>
+                    <div style="padding-left: 90px;"><button type="submit" class="btn btn-sm btn-primary ms-2">Sort</button></div>
+                
+                </form>
             </div>
-        </article> <!-- filter-group .// -->
-        
-        <article class="filter-group">
+            </article>
+            <article>
+
             <header class="card-header">
                 <a href="#" data-toggle="collapse" data-target="#collapse_3" aria-expanded="true" class="">
                     <i class="icon-control fa fa-chevron-down"></i>
-                    <h6 class="title">Price range </h6>
+                    <h6 class="title">Filter</h6>
                 </a>
             </header>
-            <div class="filter-content collapse show" id="collapse_3" style="">
-                <div class="card-body">
-                    
-                    <div class="form-row">
-                    <div class="form-group col-md-6">
-                      <label>Min</label>
-                      <!-- <input class="form-control" placeholder="$0" type="number"> -->
-                          <select class="mr-2 form-control">
-                            <option value="0">$0</option>
-                            <option value="50">$50</option>
-                            <option value="100">$100</option>
-                            <option value="150">$150</option>
-                            <option value="200">$200</option>
-                            <option value="500">$500</option>
-                            <option value="1000">$1000</option>
-                        </select>
-                    </div>
-                    <div class="form-group text-right col-md-6">
-                      <label>Max</label>
-                          <select class="mr-2 form-control">
-                            <option value="50">$50</option>
-                            <option value="100">$100</option>
-                            <option value="150">$150</option>
-                            <option value="200">$200</option>
-                            <option value="500">$500</option>
-                            <option value="1000">$1000</option>
-                            <option value="2000">$2000+</option>
-                        </select>
-                    </div>
-                    </div> <!-- form-row.// -->
-                    <button class="btn btn-block btn-primary">Apply</button>
-                </div><!-- card-body.// -->
+            <div class="filter-content collapse show" id="collapse_3">
+
+            <div class="filter-wrap d-flex justify-content-between align-items-center flex-wrap">
+                 
+                <form method="get" class="d-flex align-items-center">
+                    <select name="rating" class="form-select form-select-sm" aria-label=".form-select-sm example" style="border-radius: 0;padding: 2px 0;">
+                        <option value="">Filter by Rating</option>
+                        <option value="4plus">4+ Stars</option>
+                        <option value="3plus">3+ Stars</option>
+                        <option value="2plus">2+ Stars</option>
+                        <option value="1plus">1+ Star</option>
+                    </select>
+                    <div style="padding-left: 100px;"><button type="submit" class="btn btn-sm btn-primary ms-2">Filter</button></div>
+                </form>
             </div>
-        </article> <!-- filter-group .// -->
+
+            <div class="filter-wrap d-flex justify-content-between align-items-center flex-wrap mt-3">
+                <form method="get" class="d-flex align-items-center">
+                    <select name="new_arrivals" class="form-select form-select-sm" aria-label=".form-select-sm example" style="border-radius: 0;padding: 2px 0;">
+                        <option value="">New Arrivals</option>
+                        <option value="new">Show New Arrivals</option>
+                    </select>
+                    <div style="padding-left: 72px;"></div><button type="submit" class="btn btn-sm btn-primary ms-2">Filter</button></div>
+                </form>
+            </div>
+
+        </article>
         
     </div> <!-- card.// -->
     
@@ -121,13 +113,14 @@
         <main class="col-md-9">
     
     <header class="border-bottom mb-4 pb-3">
-            <div class="form-inline">
+            <!-- <div class="form-inline">
                 <span class="mr-md-auto"><b>{{ product_count }}</b> Items found </span>
                 
-            </div>
+            </div> -->
     </header><!-- sect-heading -->
     
     <div class="row">
+        {% if products %}
         {% for product in products %}
         <div class="col-md-4">
             <figure class="card card-product-grid">
@@ -141,14 +134,29 @@
                         <a href="{{ product.get_url }}" class="title">{{ product.product_name }}</a>
                         <div class="price-wrap mt-2">
                             <span class="price">₹ {{ product.price }}</span>
-                            <!-- <del class="price-old">$1980</del> -->
+                            
                         </div> <!-- price-wrap.// -->
+                        <div class="rating-star">
+                            <span>
+                                <i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o{%endif%}" aria-hidden="true"></i>
+                                <i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o{%endif%}" aria-hidden="true"></i>
+                                <i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o{%endif%}" aria-hidden="true"></i>
+                                <i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o{%endif%}" aria-hidden="true"></i>
+                                <i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o{%endif%}" aria-hidden="true"></i>
+                            </span>
+                        </div>
                     </div>
+                    
                     <a href="{{ product.get_url }}" class="btn btn-block btn-primary">View Details </a>
                 </figcaption>
             </figure>
         </div> <!-- col.// -->
         {% endfor %}
+        {% else %}
+        <div>
+            <h2>No Result Found.</h2>
+        </div>
+        {% endif %}
     </div> <!-- row end.// -->
     
     

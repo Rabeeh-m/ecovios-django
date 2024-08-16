@@ -51,3 +51,47 @@ label:hover ~ input:checked ~label{
 .rating-star i{
     color: #ffb503 !important;
 }
+
+ul.thumb{
+    margin: 0 auto;
+    padding: 0;
+    float: left;
+}
+
+ul.thumb li{
+    list-style: none;
+    margin: 10px;
+}
+
+ul.thumb li img{
+    width: 80px;
+    height: 80px;
+    border: 1px solid grey;
+}
+
+
+.thumb {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    list-style: none;
+    padding: 0;
+}
+
+.thumb li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Adjust the gap as needed */
+    padding: 0;
+}
+
+.thumb li a {
+    display: inline-block;
+    margin: 5px; /* Adjust margin for spacing between images */
+}
+
+.thumb li img {
+    max-width: 100px; /* Adjust size as needed */
+    height: auto;
+    display: block;
+}

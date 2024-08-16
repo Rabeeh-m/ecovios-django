@@ -19,7 +19,7 @@
     <body>
 		<style>
             footer.ft-v2 {
-                background-color: darkgrey;
+                background-color: rgb(248, 245, 245);
             }
         </style>
 		<footer class="ft-v2 border-top">
@@ -137,8 +137,17 @@
 				</div>
 			</div>
 		</footer>
-        <script src="assets/js/bootstrap.bundle.min.js"></script>
-
+        
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		<script>
+			$(document).ready(function(){
+				$('.thumb a').click(function(e){
+					e.preventDefault();
+					$('.mainImage img').attr('src', $(this).attr("href"));
+				})
+			})
+		</script>
+		<script src="assets/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>
 <!-- ========================= FOOTER END // ========================= -->

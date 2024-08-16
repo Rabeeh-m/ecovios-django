@@ -199,12 +199,28 @@
 </style>
 
 <div class="page-content">
-    <div class="page-header">
+    
+    {% if messages %}
+            <div class="alert alert-dismissible">
+                {% for message in messages %}
+                    {% if "login" not in message.tags %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    <div class="page-header ">
         <div class="container-fluid">
-            <h2 class="h5 no-margin-bottom">Product List</h2>
+            <h2 class="h5 no-margin-bottom"  style="color: white;">Product List</h2>
         </div>
     </div>
-
+    
     <div style="overflow-x:auto;">
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
@@ -222,18 +238,42 @@
                 <tr>
                     <td>{{ product.id }}</td>
                     <td>{{ product.product_name }}</td>
-                    <td>${{ product.price }}</td>
+                    <td>₹ {{ product.price }}</td>
                     <td>{{ product.stock }}</td>
                     <td>{{ product.category.category_name }}</td>
                     <td class="actions">
                         <a href="{% url 'editproduct' product.id %}" class="btn btn-sm btn-info">Edit</a>
-                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('{{ product.id }}')">Delete</button>
+                        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal{{ product.id }}">Delete</button>
                     </td>
                 </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6">No products found.</td>
-                </tr>
+                
+                <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ product.id }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ product.id }}">Confirm Delete</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete this product?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <form action="{% url 'deleteproduct' product.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-warning">Soft Delete</button>
+                                </form>
+                                <form action="{% url 'hard_delete_product' product.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Hard Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {% endfor %}
             </tbody>
         </table>

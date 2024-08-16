@@ -3,6 +3,17 @@
 {% load static %}
 
 {% block body %}
+<head>
+    <!-- Other head content -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
 <style>
     /* Custom styles for add product form */
     body {
@@ -86,51 +97,15 @@
 <div class="page-content">
     <div class="page-header">
         <div class="container-fluid">
-            <h2 class="h5 no-margin-bottom">Add New Product</h2>
+            <h2 class="h5 no-margin-bottom" style="color: white;">Add New Product</h2>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const productNameInput = document.getElementById('id_product_name');
-            const slugInput = document.getElementById('id_slug');
-            const priceInput = document.getElementById('id_price');
-            const stockInput = document.getElementById('id_stock');
-
-            productNameInput.addEventListener('input', function() {
-                const productName = productNameInput.value;
-                const slug = slugify(productName);
-                slugInput.value = slug;
-            });
-
-            priceInput.addEventListener('input', function() {
-                if (priceInput.value < 0) {
-                    priceInput.value = ''; // Clear input if negative number entered
-                }
-            });
-
-            stockInput.addEventListener('input', function() {
-                if (stockInput.value < 0) {
-                    stockInput.value = ''; // Clear input if negative number entered
-                }
-            });
-
-            function slugify(text) {
-                return text.toString().toLowerCase()
-                    .replace(/\s+/g, '-')        // Replace spaces with -
-                    .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
-                    .replace(/\-\-+/g, '-')      // Replace multiple - with single -
-                    .replace(/^-+/, '')          // Trim - from start of text
-                    .replace(/-+$/, '');         // Trim - from end of text
-            }
-        });
-    </script>
-
     <div class="form-container">
-        <form method="post" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_product_name">Product Name</label>
+                <label for="id_product_name" style="color: white;">Product Name</label>
                 {{ form.product_name }}
                 {% if form.product_name.errors %}
                     <p class="error">{{ form.product_name.errors }}</p>
@@ -138,7 +113,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_slug">Slug</label>
+                <label for="id_slug" style="color: white;">Slug</label>
                 {{ form.slug }}
                 {% if form.slug.errors %}
                     <p class="error">{{ form.slug.errors }}</p>
@@ -146,7 +121,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_price">Price</label>
+                <label for="id_price" style="color: white;">Price</label>
                 {{ form.price }}
                 {% if form.price.errors %}
                     <p class="error">{{ form.price.errors }}</p>
@@ -154,7 +129,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_stock">Stock</label>
+                <label for="id_stock" style="color: white;">Stock</label>
                 {{ form.stock }}
                 {% if form.stock.errors %}
                     <p class="error">{{ form.stock.errors }}</p>
@@ -162,7 +137,15 @@
             </div>
 
             <div class="form-group">
-                <label for="id_description">Description</label>
+                <label for="id_offer_percentage" style="color: white;">Offer Percentage</label>
+                {{ form.offer_percentage }}
+                {% if form.offer_percentage.errors %}
+                    <p class="error">{{ form.offer_percentage.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_description" style="color: white;">Description</label>
                 {{ form.description }}
                 {% if form.description.errors %}
                     <p class="error">{{ form.description.errors }}</p>
@@ -170,7 +153,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_category">Category</label>
+                <label for="id_category" style="color: white;">Category</label>
                 {{ form.category }}
                 {% if form.category.errors %}
                     <p class="error">{{ form.category.errors }}</p>
@@ -178,31 +161,25 @@
             </div>
 
             <div class="form-group">
-                <label for="id_images">Images</label>
+                <label for="id_images" style="color: white;">Images</label>
                 {{ form.images }}
                 {% if form.images.errors %}
                     <p class="error">{{ form.images.errors }}</p>
                 {% endif %}
             </div>
 
-            <!-- <div class="form-group">
-                <label for="id_image1">Image 1</label>
-                {{ form.image1 }}
-                {% if form.image1.errors %}
-                    <p class="error">{{ form.image1.errors }}</p>
-                {% endif %}
+            <div class="form-group">
+                <label for="id_gallery_images" style="color: white;">Gallery Images</label>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <!-- <div class="image-preview" id="galleryImagePreview"></div> -->
             </div>
 
-            <div class="form-group">
-                <label for="id_image2">Image 2</label>
-                {{ form.image2 }}
-                {% if form.image2.errors %}
-                    <p class="error">{{ form.image2.errors }}</p>
-                {% endif %}
-            </div> -->
 
             <div class="form-group">
-                <label for="id_is_available">Is Available</label>
+                <label for="id_is_available" style="color: white;">Is Available</label>
                 {{ form.is_available }}
                 {% if form.is_available.errors %}
                     <p class="error">{{ form.is_available.errors }}</p>
@@ -216,5 +193,188 @@
         </form>
     </div>
 </div>
+<!-- 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const productNameInput = document.getElementById('id_product_name');
+        const slugInput = document.getElementById('id_slug');
+        const priceInput = document.getElementById('id_price');
+        const stockInput = document.getElementById('id_stock');
+
+        productNameInput.addEventListener('input', function() {
+            const productName = productNameInput.value;
+            const slug = slugify(productName);
+            slugInput.value = slug;
+        });
+
+        priceInput.addEventListener('input', function() {
+            if (priceInput.value < 0) {
+                priceInput.value = ''; // Clear input if negative number entered
+            }
+        });
+
+        stockInput.addEventListener('input', function() {
+            if (stockInput.value < 0) {
+                stockInput.value = ''; // Clear input if negative number entered
+            }
+        });
+
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')        // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+                .replace(/\-\-+/g, '-')      // Replace multiple - with single -
+                .replace(/^-+/, '')          // Trim - from start of text
+                .replace(/-+$/, '');         // Trim - from end of text
+        }
+    });
+</script> -->
+<div id="cropperModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="image" src="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cropperModal = document.getElementById('cropperModal');
+        const image = document.getElementById('image');
+        let cropper;
+
+        document.getElementById('id_images').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    $(cropperModal).modal('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $(cropperModal).on('shown.bs.modal', function() {
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 2
+            });
+        }).on('hidden.bs.modal', function() {
+            cropper.destroy();
+            cropper = null;
+        });
+
+        document.getElementById('cropButton').addEventListener('click', function() {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300
+            });
+            canvas.toBlob(function(blob) {
+                const fileInput = document.getElementById('id_images');
+                const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+
+                // Create a new DataTransfer object and add the cropped file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                // Update the preview
+                const previewContainer = document.getElementById('mainImagePreview');
+                previewContainer.innerHTML = ''; // Clear existing preview
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(blob);
+                previewContainer.appendChild(img);
+
+                $(cropperModal).modal('hide');
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+    // Handle main image preview
+    document.getElementById('id_images').addEventListener('change', function(event) {
+        handleFileInput(event, false);
+    });
+
+    // Handle gallery images preview
+    document.getElementById('id_gallery_images').addEventListener('change', function(event) {
+        handleFileInput(event, true);
+    });
+
+    function handleFileInput(event, isGallery) {
+        const files = event.target.files;
+        const previewContainer = isGallery ? document.getElementById('galleryImagePreview') : document.getElementById('mainImagePreview');
+        previewContainer.innerHTML = ''; // Clear existing preview
+
+        Array.from(files).forEach(file => {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Handle slug auto-update based on product name
+    document.getElementById('id_product_name').addEventListener('input', function(event) {
+        const productName = event.target.value;
+        const slug = productName.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+        document.getElementById('id_slug').value = slug;
+    });
+
+    // Ensure positive values for price and stock
+    function validatePositiveNumber(event) {
+        const value = parseFloat(event.target.value);
+        if (isNaN(value) || value <= 0) {
+            event.target.value = '';
+        }
+    }
+
+    document.getElementById('id_price').addEventListener('input', validatePositiveNumber);
+    document.getElementById('id_stock').addEventListener('input', validatePositiveNumber);
+</script>
+
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const offerInput = document.getElementById('id_offer_percentage');
+        
+        offerInput.addEventListener('input', function() {
+            if (parseFloat(offerInput.value) > 80) {
+                offerInput.setCustomValidity('Offer percentage cannot exceed 80%.');
+            } else {
+                offerInput.setCustomValidity('');
+            }
+        });
+    });
+</script> -->
 
 {% endblock %}

@@ -1,6 +1,17 @@
 {% extends 'ahome.html' %}
 
 {% block body %}
+
+<head>
+    <!-- Other head content -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
 <style>
     /* Custom styles for edit product form */
     body {
@@ -84,51 +95,16 @@
 <div class="page-content">
     <div class="page-header">
         <div class="container-fluid">
-            <h2 class="h5 no-margin-bottom">Edit Product: {{ product.product_name }}</h2>
+            <h2 class="h5 no-margin-bottom" style="color: white;">Edit Product: {{ product.product_name }}</h2>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const productNameInput = document.getElementById('id_product_name');
-            const slugInput = document.getElementById('id_slug');
-            const priceInput = document.getElementById('id_price');
-            const stockInput = document.getElementById('id_stock');
-
-            productNameInput.addEventListener('input', function() {
-                const productName = productNameInput.value;
-                const slug = slugify(productName);
-                slugInput.value = slug;
-            });
-
-            priceInput.addEventListener('input', function() {
-                if (priceInput.value < 0) {
-                    priceInput.value = ''; // Clear input if negative number entered
-                }
-            });
-
-            stockInput.addEventListener('input', function() {
-                if (stockInput.value < 0) {
-                    stockInput.value = ''; // Clear input if negative number entered
-                }
-            });
-
-            function slugify(text) {
-                return text.toString().toLowerCase()
-                    .replace(/\s+/g, '-')        // Replace spaces with -
-                    .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
-                    .replace(/\-\-+/g, '-')      // Replace multiple - with single -
-                    .replace(/^-+/, '')          // Trim - from start of text
-                    .replace(/-+$/, '');         // Trim - from end of text
-            }
-        });
-    </script>
 
     <div class="form-container">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-                <label for="id_product_name">Product Name</label>
+                <label for="id_product_name" style="color: white;">Product Name</label>
                 {{ form.product_name }}
                 {% if form.product_name.errors %}
                     <p class="error">{{ form.product_name.errors }}</p>
@@ -136,7 +112,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_slug">Slug</label>
+                <label for="id_slug" style="color: white;">Slug</label>
                 {{ form.slug }}
                 {% if form.slug.errors %}
                     <p class="error">{{ form.slug.errors }}</p>
@@ -144,7 +120,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_price">Price</label>
+                <label for="id_price" style="color: white;">Price</label>
                 {{ form.price }}
                 {% if form.price.errors %}
                     <p class="error">{{ form.price.errors }}</p>
@@ -152,7 +128,7 @@
             </div>
 
             <div class="form-group">
-                <label for="id_stock">Stock</label>
+                <label for="id_stock" style="color: white;">Stock</label>
                 {{ form.stock }}
                 {% if form.stock.errors %}
                     <p class="error">{{ form.stock.errors }}</p>
@@ -160,7 +136,15 @@
             </div>
 
             <div class="form-group">
-                <label for="id_description">Description</label>
+                <label for="id_offer_percentage" style="color: white;">Offer Percentage</label>
+                {{ form.offer_percentage }}
+                {% if form.offer_percentage.errors %}
+                    <p class="error">{{ form.offer_percentage.errors }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_description" style="color: white;">Description</label>
                 {{ form.description }}
                 {% if form.description.errors %}
                     <p class="error">{{ form.description.errors }}</p>
@@ -168,43 +152,71 @@
             </div>
 
             <div class="form-group">
-                <label for="id_category">Category</label>
+                <label for="id_category" style="color: white;">Category</label>
                 {{ form.category }}
                 {% if form.category.errors %}
                     <p class="error">{{ form.category.errors }}</p>
                 {% endif %}
             </div>
 
-            <div class="form-group">
-                <label for="id_images">Images</label>
+            <!-- <div class="form-group">
+                <label for="id_images" style="color: white;">Images</label>
                 {{ form.images }}
                 {% if form.images.errors %}
                     <p class="error">{{ form.images.errors }}</p>
                 {% endif %}
                 {% if product.images %}
-                    <label>Current Image:</label>
+                    <label style="color: white;">Current Image:</label>
                     <p class="image-url"><a href="{{ product.images.url }}" target="_blank">{{ product.images.url }}</a></p>
                 {% endif %}
-            </div>
+            </div> -->
+
 
             <div class="form-group">
-                <label for="id_image1">Image 1</label>
-                {{ form.image1 }}
-                {% if form.image1.errors %}
-                    <p class="error">{{ form.image1.errors }}</p>
+                <label for="id_images">Main Image</label>
+                <input type="file" name="images" id="id_images">
+                <div class="main-image-preview" id="mainImagePreview">
+                    {% if product.images %}
+                        <img src="{{ product.images.url }}" alt="Product Image">
+                    {% endif %}
+                </div>
+                <span class="file-name" id="mainImageFileName">{{ form.images.value }}</span>
+                {% if form.images.errors %}
+                    <p class="error">{{ form.images.errors }}</p>
                 {% endif %}
             </div>
 
             <div class="form-group">
-                <label for="id_image2">Image 2</label>
-                {{ form.image2 }}
-                {% if form.image2.errors %}
-                    <p class="error">{{ form.image2.errors }}</p>
+                <label for="id_gallery_images">Gallery Images</label>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <div class="image-preview" id="galleryImagePreview">
+                    {% for image in product.productgallery_set.all %}
+                        <div class="image-preview-item" data-image-id="{{ image.id }}">
+                            <img src="{{ image.image.url }}" alt="Product Image">
+                            <span class="file-path">
+                                <a href="{{ image.image.url }}" class="file-path-link" target="_blank">{{ image.image.url }}</a>
+                            </span>
+                            <button type="button" class="btn btn-delete-image">Delete</button>
+                        </div>
+                    {% endfor %}
+                </div>
+                <span class="file-name" id="galleryImagesFileName"></span>
+                {% if form.gallery_images.errors %}
+                    <p class="error">{{ form.gallery_images.errors }}</p>
                 {% endif %}
             </div>
+            <div class="form-group">
+                <label for="id_gallery_images" style="color: white;">Gallery Images</label>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <input type="file" name="gallery_images" id="id_gallery_images" multiple>
+                <!-- <div class="image-preview" id="galleryImagePreview"></div> -->
+            </div>
+
 
             <div class="form-group">
-                <label for="id_is_available">Is Available</label>
+                <label for="id_is_available" style="color: white;">Is Available</label>
                 {{ form.is_available }}
                 {% if form.is_available.errors %}
                     <p class="error">{{ form.is_available.errors }}</p>
@@ -218,5 +230,238 @@
         </form>
     </div>
 </div>
+
+<!-- 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const productNameInput = document.getElementById('id_product_name');
+        const slugInput = document.getElementById('id_slug');
+        const priceInput = document.getElementById('id_price');
+        const stockInput = document.getElementById('id_stock');
+
+        productNameInput.addEventListener('input', function() {
+            const productName = productNameInput.value;
+            const slug = slugify(productName);
+            slugInput.value = slug;
+        });
+
+        priceInput.addEventListener('input', function() {
+            if (priceInput.value < 0) {
+                priceInput.value = ''; // Clear input if negative number entered
+            }
+        });
+
+        stockInput.addEventListener('input', function() {
+            if (stockInput.value < 0) {
+                stockInput.value = ''; // Clear input if negative number entered
+            }
+        });
+
+        function slugify(text) {
+            return text.toString().toLowerCase()
+                .replace(/\s+/g, '-')        // Replace spaces with -
+                .replace(/[^\w\-]+/g, '')   // Remove all non-word chars
+                .replace(/\-\-+/g, '-')      // Replace multiple - with single -
+                .replace(/^-+/, '')          // Trim - from start of text
+                .replace(/-+$/, '');         // Trim - from end of text
+        }
+    });
+</script> -->
+<div id="cropperModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crop Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="img-container">
+                    <img id="image" src="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="cropButton">Crop</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cropperModal = document.getElementById('cropperModal');
+        const image = document.getElementById('image');
+        let cropper;
+
+        document.getElementById('id_images').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    image.src = e.target.result;
+                    $(cropperModal).modal('show');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $(cropperModal).on('shown.bs.modal', function() {
+            cropper = new Cropper(image, {
+                aspectRatio: 1,
+                viewMode: 2
+            });
+        }).on('hidden.bs.modal', function() {
+            cropper.destroy();
+            cropper = null;
+        });
+
+        document.getElementById('cropButton').addEventListener('click', function() {
+            const canvas = cropper.getCroppedCanvas({
+                width: 300,
+                height: 300
+            });
+            canvas.toBlob(function(blob) {
+                const fileInput = document.getElementById('id_images');
+                const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+
+                // Create a new DataTransfer object and add the cropped file
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                // Update the preview
+                const previewContainer = document.getElementById('mainImagePreview');
+                previewContainer.innerHTML = ''; // Clear existing preview
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(blob);
+                previewContainer.appendChild(img);
+
+                $(cropperModal).modal('hide');
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const baseUrl = "{% url 'delete_gallery_image' %}";
+
+        // Handle main image preview
+        document.getElementById('id_images').addEventListener('change', function(event) {
+            const previewContainer = document.getElementById('mainImagePreview');
+            previewContainer.innerHTML = ''; // Clear existing preview
+
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+
+                    previewContainer.appendChild(img);
+                };
+
+                reader.readAsDataURL(file);
+
+                // Update file name display
+                document.getElementById('mainImageFileName').textContent = file.name;
+            }
+        });
+
+        // Handle gallery images preview
+        document.getElementById('id_gallery_images').addEventListener('change', function(event) {
+            const previewContainer = document.getElementById('galleryImagePreview');
+            previewContainer.innerHTML = ''; // Clear existing previews
+
+            const files = event.target.files;
+            const fileNames = Array.from(files).map(file => file.name).join(', ');
+
+            document.getElementById('galleryImagesFileName').textContent = fileNames;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'image-preview-item';
+                        div.dataset.imageId = 'new'; // New image placeholder
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        div.appendChild(img);
+
+                        const path = document.createElement('span');
+                        path.className = 'file-path';
+                        path.innerHTML = `<a href="${e.target.result}" class="file-path-link" target="_blank">${file.name}</a>`;
+                        div.appendChild(path);
+
+                        previewContainer.appendChild(div);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Handle slug auto-update based on product name
+        document.getElementById('id_product_name').addEventListener('input', function(event) {
+            const productName = event.target.value;
+            const slug = productName.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+            document.getElementById('id_slug').value = slug;
+        });
+
+        // Ensure positive values for price and stock
+        function validatePositiveNumber(event) {
+            const value = parseFloat(event.target.value);
+            if (isNaN(value) || value <= 0) {
+                event.target.value = '';
+            }
+        }
+
+        document.getElementById('id_price').addEventListener('input', validatePositiveNumber);
+        document.getElementById('id_stock').addEventListener('input', validatePositiveNumber);
+
+        // Handle image deletion
+        document.querySelectorAll('.btn-delete-image').forEach(button => {
+            button.addEventListener('click', function() {
+                const imageId = this.closest('.image-preview-item').dataset.imageId;
+                console.log('Deleting image with ID:', imageId); // Debugging line
+                const url = `${baseUrl}?image_id=${imageId}`;
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: new URLSearchParams({ 'image_id': imageId })
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Remove the image from the DOM
+                        this.closest('.image-preview-item').remove();
+                    } else {
+                        alert('Failed to delete image');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to delete image');
+                });
+            });
+        });
+    });
+</script>
 
 {% endblock %}

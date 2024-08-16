@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="section-content padding-y bg">
+    <div class="container">
+        <h4 class="text-center mb-4">Order History</h4>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card mb-3">
+                    <h5 class="card-header">Your Order History</h5>
+                    <div class="card-body">
+                        {% for order in orders %}
+                        <div class="order">
+                            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                            <p><strong>Order Date:</strong> {{ order.created_at }}</p>
+                            <p><strong>Status:</strong> {{ order.status }}</p>
+                            <p><strong>Total Amount:</strong> ₹ {{ order.order_total }}</p>
+                            <p><strong>Delivery Address:</strong> {{ order.full_address }}</p>
+                            <p><strong>Products:</strong></p>
+                            <ul>
+                                {% for item in order.orderproduct_set.all %}
+                                <li>{{ item.product.product_name }} - Quantity: {{ item.quantity }}</li>
+                                {% endfor %}
+                            </ul>
+                            <hr>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

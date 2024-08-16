@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,15 +46,17 @@ INSTALLED_APPS = [
     'accounts',
     'store',
     'adminapp',
+    'carts',
+    'orders',
 
 
     'allauth',
     'allauth.account',
-
     'allauth.socialaccount',
-
     'allauth.socialaccount.providers.google',
     
+    'easy_thumbnails',
+    'image_cropping',
 ]
 
 SITE_ID = 1
@@ -84,7 +88,7 @@ ROOT_URLCONF = 'ecovios.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,6 +99,7 @@ TEMPLATES = [
                 'category.context_processors.menu_links', # By creating the context processor we can call menu_links methon in any templates
 
                 'django.template.context_processors.request',
+                'carts.context_processors.counter',
             ],
         },
     },
@@ -202,3 +207,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+THUMBNAIL_PROCESSORS = (
+    'image_cropping.thumbnail_processors.crop_corners',
+    'easy_thumbnails.processors.colorspace',
+    'easy_thumbnails.processors.autocrop',
+    'easy_thumbnails.processors.scale_and_crop',
+    'easy_thumbnails.processors.filters',
+)
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'default': {'size': (100, 100), 'crop': 'smart'},
+        'avatar': {'size': (430, 360), 'crop': 'scale'},
+    },
+}
+
+
+USE_TZ = True
+TIME_ZONE = 'Asia/Kolkata'
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"

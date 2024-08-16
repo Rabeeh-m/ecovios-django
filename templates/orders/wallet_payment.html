@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="section-content padding-y bg">
+    <div class="container">
+        <h4 class="text-center mb-10">Pay with Wallet</h4>
+        <div class="row">
+            <aside class="col-lg-8">
+                <div class="card">
+                    <h5 class="card-header">Billing Address</h5>
+                    <div class="card-body">
+                        <p class="card-text mb-2">{{ address.full_name }}</p>
+                        <p class="card-text mb-0">{{ address.full_address }}</p>
+                        <p class="card-text mb-0">{{ address.city }}, {{ order.state }}</p>
+                        <p class="card-text mb-0">{{ address.country }}</p>
+                        <p class="card-text mb-0">{{ address.phone_number }}</p>
+                    </div>
+                </div>
+
+                <!-- Review Products -->
+                <div class="card">
+                    <h5 class="card-header">Review Products</h5>
+                    <div class="card-body">
+                        <table class="table table-borderless table-shopping-cart">
+                            <thead class="text-muted">
+                                <tr class="small text-uppercase">
+                                    <th scope="col">Product</th>
+                                    <th scope="col" width="120">Quantity</th>
+                                    <th scope="col" width="120">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cart_item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <figure class="itemside align-items-center">
+                                            <div class="aside">
+                                                <img src="{{ cart_item.product.images.url }}" class="img-sm">
+                                            </div>
+                                            <figcaption class="info">
+                                                <a href="{{ cart_item.product.get_url }}" class="title text-dark">
+                                                    {{ cart_item.product.product_name }}</a>
+                                            </figcaption>
+                                        </figure>
+                                    </td>
+                                    <td>
+                                        <label for="">{{ cart_item.quantity }}</label>
+                                    </td>
+                                    <td>
+                                        <div class="price-wrap">
+                                            <var class="price">₹ {{ cart_item.sub_total }}</var>
+                                            <small class="text-muted">₹ {{ cart_item.product.price}} each </small>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aside>
+
+            <aside class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <dl class="dlist-align">
+                            <dt>Total price:</dt>
+                            <dd class="text-right">₹ {{ total }}.00</dd>
+                        </dl>
+                        <dl class="dlist-align">
+                            <dt>Discount:</dt>
+                            <dd class="text-right">- ₹ {{ discount }}</dd>
+                        </dl>
+                        <dl class="dlist-align">
+                            <dt>Delivery charge:</dt>
+                            <dd class="text-right">₹ 50</dd>
+                        </dl>
+                        <dl class="dlist-align">
+                            <dt>Total:</dt>
+                            <dd class="text-right text-dark b"><strong>₹ {{ grand_total }}</strong></dd>
+                        </dl>
+                        <hr>
+                        <div class="card">
+                            <h5 class="card-header">Wallet Balance</h5>
+                            <div class="card-body">
+                                <p>Your current wallet balance is: ₹ {{ wallet_balance }}</p>
+                                {% if wallet_balance >= grand_total %}
+                                    <a href="{% url 'wallet_order' %}" class="btn btn-success btn-block">Place Order with Wallet</a>
+                                {% else %}
+                                    <p class="text-danger">Insufficient wallet balance to place this order.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'ahome.html' %}
+{% block body %}
+
+{% load static %}
+<style>
+    body {
+        background-color: #2d3035;
+        color: white;
+    }
+    .table {
+        background-color: #3a3f43;
+        color: white;
+    }
+    th, td {
+        border: 1px solid #444;
+    }
+    th {
+        background-color: #444;
+    }
+    .pagination {
+        justify-content: center;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="container">
+
+    {% if messages %}
+            <div class="alert alert-dismissible">
+                {% for message in messages %}
+                    {% if "login" not in message.tags %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Sales Count</h5>
+                    <p class="card-text">{{ total_sales_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Total Order Amount</h5>
+                    <p class="card-text">{{ total_order_amount }}</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Total Discount Amount</h5>
+                    <p class="card-text">₹ {{ total_discount_amount }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Total Coupon Amount</h5>
+                    <p class="card-text">₹ {{ total_coupon_amount }}</p>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="mb-3">
+        <a href="{% url 'download_pdf' %}" class="btn btn-danger">Download PDF</a>
+        <a href="{% url 'download_excel' %}" class="btn btn-success">Download Excel</a>
+    </div>
+
+    {% if orders %}
+        <table class="table table-striped">
+            <!-- Existing table structure -->
+        </table>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No sales found for the selected time range.
+        </div>
+    {% endif %}
+
+    <form method="GET" class="mb-4">
+        <div class="form-group">
+            <label for="time_range" style="color: white;">Filter By:</label>
+            <select name="time_range" id="time_range" class="form-control">
+                <option style="color: black;" value="daily" {% if time_range == 'daily' %}selected{% endif %}>Daily</option>
+                <option style="color: black;" value="weekly" {% if time_range == 'weekly' %}selected{% endif %}>Weekly</option>
+                <option style="color: black;" value="monthly" {% if time_range == 'monthly' %}selected{% endif %}>Monthly</option>
+                <option style="color: black;" value="yearly" {% if time_range == 'yearly' %}selected{% endif %}>Yearly</option>
+                <option style="color: black;" value="custom" {% if time_range == 'custom' %}selected{% endif %}>Custom Date</option>
+            </select>
+        </div>
+            <div class="form-group">
+                <label for="start_date" style="color: white;">Start Date:</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+            </div>
+            <div class="form-group">
+                <label for="end_date" style="color: white;">End Date:</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+            </div>
+       
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+
+    <h2 class="text-center mb-4">Sales Report</h2>
+
+    {% if orders %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Total Amount</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_number }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>₹ {{ order.order_total }}</td>
+                    <td>{{ order.created_at|date:'Y-m-d H:i:s' }}</td>
+                    <td>{{ order.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if orders.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.time_range %}&time_range={{ request.GET.time_range }}{% endif %}" aria-label="First">
+                            <span aria-hidden="true">« First</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.previous_page_number }}{% if request.GET.time_range %}&time_range={{ request.GET.time_range }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">‹ Previous</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in orders.paginator.page_range %}
+                    {% if num == orders.number %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.time_range %}&time_range={{ request.GET.time_range }}{% endif %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if orders.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.next_page_number }}{% if request.GET.time_range %}&time_range={{ request.GET.time_range }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">Next ›</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ orders.paginator.num_pages }}{% if request.GET.time_range %}&time_range={{ request.GET.time_range }}{% endif %}" aria-label="Last">
+                            <span aria-hidden="true">Last »</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% else %}
+        <div class="alert alert-info" role="alert">
+            No sales found for the selected time range.
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function toggleDateFields() {
+        var timeRange = document.getElementById('time_range').value;
+        var customDateFields = document.getElementById('custom_date_fields');
+        if (timeRange === 'custom') {
+            customDateFields.style.display = 'block';
+        } else {
+            customDateFields.style.display = 'none';
+        }
+    }
+</script>
+
+{% endblock %}

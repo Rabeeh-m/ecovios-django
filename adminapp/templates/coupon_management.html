@@ -1,0 +1,157 @@
+{% extends 'ahome.html' %}
+{% block body %}
+
+{% load static %}
+<style>
+    body {
+        background-color: #2d3035;
+        color: #2d3035;
+    }
+    .table {
+        background-color: white;
+        color: white;
+    }
+    .mainbody{
+        background-color: #3a3f43;
+        color: white;
+    }
+    th, td {
+        border: 1px solid #444;
+    }
+    th {
+        background-color: #f3bbbb;
+    }
+    .pagination {
+        justify-content: center;
+        margin-top: 20px;
+    }
+</style>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Management</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="mainbody">
+    
+    <div class="container mt-5" style="color: #2d3035;">
+        <h2 class="text-center mb-5" style="color: white;"><strong>Coupon Management</strong></h2>
+
+        {% if messages %}
+            <div class="alert alert-dismissible">
+                {% for message in messages %}
+                    {% if "login" not in message.tags %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-5">
+                <h4 style="color: white;">Create Coupon</h4>
+
+                <!-- <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary" style="color: white;">Create Coupon</button>
+                </form> -->
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_code">Coupon Code</label>
+                                <br>
+                                {{ form.code }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_discount">Discount Amount</label>
+                                <br>
+                                {{ form.discount }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_valid_from">Valid From :</label>
+                                {{ form.valid_from }}
+                            </div>
+                        </div>
+                        
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_valid_to">Valid To :</label>
+                                {{ form.valid_to }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="id_active">Active</label>
+                                {{ form.active }}
+                            </div>
+                        </div>                   
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Create Coupon</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-md-7">
+                <h4 style="color: white;">Existing Coupons</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Discount</th>
+                            <th>Valid From</th>
+                            <th>Valid To</th>
+                            <th>Active</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for coupon in coupons %}
+                        <tr>
+                            <td>{{ coupon.code }}</td>
+                            <td>{{ coupon.discount }}</td>
+                            <td>{{ coupon.valid_from }}</td>
+                            <td>{{ coupon.valid_to }}</td>
+                            <td>{{ coupon.active }}</td>
+                            <td>
+                                <form action="{% url 'delete_coupon' coupon.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+{% endblock %}

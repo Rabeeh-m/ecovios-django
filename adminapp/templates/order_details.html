@@ -1,0 +1,74 @@
+{% extends 'ahome.html' %}
+
+{% block body %}
+<title>Order Details</title>
+
+<style>
+    body {
+        background-color: #2d3035;
+        color: white;
+    }
+    .table {
+        background-color: #3a3f43;
+        color: white;
+    }
+    th, td {
+        border: 1px solid #444;
+    }
+    th {
+        background-color: #444;
+    }
+</style>
+
+<section class="section-content padding-y bg col-md-12">
+    <div class="container">
+        <h2 class="text-center mb-4">Order Details</h2>
+
+        <div class="mb-4">
+            <h3 style="text-decoration: underline; padding-bottom: 20px; color: #dc3545;" >Order Information</h3>
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Total Amount:</strong> ₹ {{ order.order_total }}</p>
+            <p><strong>Status:</strong> {{ order.status }}</p>
+            <p><strong>Created At:</strong> {{ order.created_at }}</p>
+        </div>
+
+        <div class="mb-4">
+            <h3 style="text-decoration: underline; padding-bottom: 20px; color: #dc3545;">User Address</h3>
+            <p><strong>First Name:</strong> {{ user_address.first_name }}</p>
+            <p><strong>Last Name:</strong> {{ user_address.last_name }}</p>
+            <p><strong>Phone Number:</strong> {{ user_address.phone_number }}</p>
+            <p><strong>Email:</strong> {{ user_address.email }}</p>
+            <p><strong>Address Line 1:</strong> {{ user_address.address_line_1 }}</p>
+            <p><strong>Address Line 2:</strong> {{ user_address.address_line_2 }}</p>
+            <p><strong>City:</strong> {{ user_address.city }}</p>
+            <p><strong>State:</strong> {{ user_address.state }}</p>
+            <p><strong>Country:</strong> {{ user_address.country }}</p>
+        </div>
+
+        <!-- <div class="mb-4">
+            <h4>Order Items</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td> <!-- Assuming product has a 'name' field -->
+                        <td>{{ item.quantity }}</td>
+                        <td>₹ {{ item.price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div> -->
+
+        <a href="{% url 'manage_orders' %}" class="btn btn-secondary">Back to Order Management</a>
+    </div>
+</section>
+
+{% endblock %}

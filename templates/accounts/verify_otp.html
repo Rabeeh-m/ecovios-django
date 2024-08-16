@@ -34,7 +34,7 @@
                 <form method="post" action="{% url 'resend_otp' user_id=user_id %}">
                     {% csrf_token %}
                     <br><br>
-                    <p id="otpTimer" class="text-center mt-3">Time remaining: <span id="countdown">03:00</span> seconds</p>
+                    <p id="otpTimer" class="text-center mt-3">Time remaining: <span id="countdown">01:00</span> seconds</p>
                     
                     <button type="submit" class="btn btn-link btn-block" id="resendButton">Resend OTP</button>
                 </form>
@@ -73,7 +73,7 @@
 
         // Start the countdown when page loads
         window.onload = function () {
-            var threeMinutes = 60 * 3; // Change this to adjust countdown time in seconds
+            var threeMinutes = 60 * 1; // Change this to adjust countdown time in seconds
             var display = document.getElementById("countdown");
             startTimer(threeMinutes, display);
         };
