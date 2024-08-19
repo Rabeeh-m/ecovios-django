@@ -377,14 +377,14 @@ def payments(request):
     CartItem.objects.filter(user=request.user).delete()
 
     # Send confirmation email
-    mail_subject = 'Thank you for your order'
-    message = render_to_string('orders/order_received_email.html', {
-        'user': request.user,
-        'order': order,
-    })
-    to_email = request.user.email
-    send_email = EmailMessage(mail_subject, message, to=[to_email])
-    send_email.send()
+    # mail_subject = 'Thank you for your order'
+    # message = render_to_string('orders/order_received_email.html', {
+    #     'user': request.user,
+    #     'order': order,
+    # })
+    # to_email = request.user.email
+    # send_email = EmailMessage(mail_subject, message, to=[to_email])
+    # send_email.send()
 
     # Return a JsonResponse with order and transaction details
     data = {
