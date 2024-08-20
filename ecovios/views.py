@@ -10,9 +10,12 @@ from django.views.decorators.cache import cache_control
 def home(request):
     products = Product.objects.all().filter(is_available = True).order_by('created_date')
 
+    reviews = {}  # Initialize reviews as an empty dictionary
+
     # Get the reviews
     for product in products:
-        reviews = ReviewRating.objects.filter(product_id=product.id, status=True)
+        product_reviews = ReviewRating.objects.filter(product_id=product.id, status=True)
+        reviews[product.id] = product_reviews
 
     context = {
         'products' : products,
