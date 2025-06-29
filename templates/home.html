@@ -3,60 +3,563 @@
 
 {% block content %}
 
-
-<!-- ========================= SECTION MAIN ========================= -->
-<section class="section-intro padding-y-sm">
-<div class="container">
-
-<div class="intro-banner-wrap">
-	<img src="{% static 'images/banners/main-banner.webp' %}" class="img-fluid rounded">
-</div>
-
-</div> <!-- container //  -->
+<!-- ========================= MINIMALIST HERO ========================= -->
+<section class="hero-section">
+  <div class="container-fluid px-0">
+    <div class="hero-slide">
+      <div class="hero-image" style="background-image: url('{% static 'images/banners/EcoviosBanner1.1.jpg' %}')"></div>
+      <div class="hero-content text-center">
+        <h1 class="hero-title display-4">Sustainable Essentials</h1>
+        <p class="hero-subtitle lead">Thoughtfully crafted for conscious living</p>
+        <a href="{% url 'store' %}" class="btn btn-outline-light btn-lg mt-3">Explore Collection</a>
+      </div>
+    </div>
+  </div>
 </section>
-<!-- ========================= SECTION MAIN END// ========================= -->
 
-<!-- ========================= SECTION  ========================= -->
-<section class="section-name padding-y-sm">
-<div class="container">
-
-<header class="section-heading">
-	<a href="{% url 'store' %}" class="btn btn-outline-primary float-right">See all</a>
-	<h3 class="section-title">Popular products</h3>
-</header><!-- sect-heading -->
-
-	
-<div class="row">
-	{% for product in products %}
-	<div class="col-md-3">
-		<div class="card card-product-grid">
-			<a href="{{ product.get_url }}" class="img-wrap"> <img src="{{ product.images.url }}"> </a>
-			<figcaption class="info-wrap">
-				<a href="{{ product.get_url }}"" class="title">{{ product.product_name }}</a>
-				<div class="price mt-1">₹ {{ product.price }}</div> <!-- price-wrap.// -->
-				<div class="rating-star">
-					<span>
-						<i class="fa fa-star{% if product.averageReview < 0.5 %}-o{% elif product.averageReview >= 0.5 and product.averageReview < 1 %}-half-o{%endif%}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if product.averageReview < 1.5 %}-o{% elif product.averageReview >= 1.5 and product.averageReview < 2 %}-half-o{%endif%}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if product.averageReview < 2.5 %}-o{% elif product.averageReview >= 2.5 and product.averageReview < 3 %}-half-o{%endif%}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if product.averageReview < 3.5 %}-o{% elif product.averageReview >= 3.5 and product.averageReview < 4 %}-half-o{%endif%}" aria-hidden="true"></i>
-						<i class="fa fa-star{% if product.averageReview < 4.5 %}-o{% elif product.averageReview >= 4.5 and product.averageReview < 5 %}-half-o{%endif%}" aria-hidden="true"></i>
-					</span>
-				</div>
-			</figcaption>
-		</div>
-	</div> <!-- col.// -->	
-	{% endfor %}
-</div> <!-- row.// -->
-
-</div><!-- container // -->
+<!-- ========================= CATEGORY PILLS ========================= -->
+<section class="section-categories py-5 bg-white">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-center category-pills">
+      <a href="#" class="category-pill active">All</a>
+      <a href="#" class="category-pill">Fashion</a>
+      <a href="#" class="category-pill">Home</a>
+      <a href="#" class="category-pill">Beauty</a>
+      <a href="#" class="category-pill">Stationery</a>
+      <a href="#" class="category-pill">New Arrivals</a>
+    </div>
+  </div>
 </section>
-<!-- ========================= SECTION  END// ========================= -->
+
+<!-- ========================= MODERN PRODUCT GRID ========================= -->
+<section class="section-products py-5">
+  <div class="container">
+    <div class="section-header d-flex justify-content-between align-items-center mb-5">
+      <h2 class="section-title">Curated Selection</h2>
+      <a href="{% url 'store' %}" class="view-all-link">Explore All <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+    
+    <div class="row g-4">
+      {% for product in products %}
+      <div class="col-xl-3 col-lg-4 col-md-6">
+        <div class="modern-product-card">
+          <a href="{{ product.get_url }}" class="product-image-wrapper">
+            <img src="{{ product.images.url }}" class="product-image" alt="{{ product.product_name }}" loading="lazy">
+            {% if product.is_new %}<span class="new-badge">New Arrival</span>{% endif %}
+            {% if product.discount_price %}<span class="discount-badge">-{{ product.get_discount_percentage }}%</span>{% endif %}
+            <div class="image-overlay"></div>
+          </a>
+          
+          <div class="product-content">
+            <div class="d-flex justify-content-between align-items-start">
+              <h3 class="product-title"><a href="{{ product.get_url }}">{{ product.product_name }}</a></h3>
+              <div class="save-icon">
+                <i class="far fa-bookmark"></i>
+              </div>
+            </div>
+            
+            <div class="product-meta">
+              <div class="product-rating">
+                {% for i in "12345" %}
+                  {% if forloop.counter <= product.averageReview %}
+                    <i class="fas fa-star"></i>
+                  {% else %}
+                    {% if forloop.counter|add:"-0.5" <= product.averageReview %}
+                      <i class="fas fa-star-half-alt"></i>
+                    {% else %}
+                      <i class="far fa-star"></i>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+                <span class="rating-count">({{ product.countReview }})</span>
+              </div>
+              
+              <div class="product-pricing">
+                {% if product.discount_price %}
+                  <span class="current-price">₹{{ product.discount_price }}</span>
+                  <span class="original-price">₹{{ product.price }}</span>
+                {% else %}
+                  <span class="current-price">₹{{ product.price }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
 
 
+<!-- ========================= ECO STATEMENT ========================= -->
+<section class="section-statement py-5 bg-white">
+  <div class="container text-center">
+    <div class="statement-content mx-auto" style="max-width: 700px">
+      <i class="fas fa-leaf statement-icon mb-4"></i>
+      <h2 class="statement-title mb-4">Designed With Purpose</h2>
+      <p class="statement-text lead">
+        Each Ecovios product is mindfully created using sustainable materials and ethical production methods. 
+        We believe beautiful design should never come at the expense of our planet.
+      </p>
+      <a href="#" class="btn btn-outline-dark mt-4">Our Philosophy</a>
+    </div>
+  </div>
+</section>
 
-</body>
-</html>
+<!-- ========================= IMAGE GALLERY ========================= -->
+<section class="section-gallery py-5">
+  <div class="container-fluid px-0">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <div class="gallery-item" style="background-image: url('https://cdn.vibecity.in/providers/641b139595386001713c2397/1000012729_2aaab9bf-414e-4ea2-a9b9-635234f3e66d-3X.png')">
+          <div class="gallery-overlay">
+            <h3>Eco Fashion</h3>
+            <a href="#" class="gallery-link">Explore</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="gallery-item" style="background-image: url('https://resinobsession.com/wp-content/uploads/2022/05/epoxy-charms-made-with-stickers-e1652283215628.jpg')">
+          <div class="gallery-overlay">
+            <h3>Gifts</h3>
+            <a href="#" class="gallery-link">Discover</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="gallery-item" style="background-image: url('https://5.imimg.com/data5/SELLER/Default/2022/3/PW/QS/MG/2907973/epoxy-resin-for-book-cover-500x500.jpg')">
+          <div class="gallery-overlay">
+            <h3>Stationery</h3>
+            <a href="#" class="gallery-link">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Minimalist Hero */
+  .hero-section {
+    position: relative;
+    height: 40vh;
+    min-height: 400px;
+    margin-bottom: 3rem;
+  }
+  .hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    width: 100%;
+    padding: 0 20px;
+  }
+  .hero-title {
+    font-weight: 500;
+    letter-spacing: 4px;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  }
+  .hero-subtitle {
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .btn-outline-light {
+    border-width: 2px;
+    padding: 10px 30px;
+    letter-spacing: 1px;
+  }
+
+  /* Category Pills */
+  .category-pills {
+    gap: 10px;
+  }
+  .category-pill {
+    display: inline-block;
+    padding: 8px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 30px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .category-pill:hover, .category-pill.active {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+  }
+
+  /* Product Grid */
+  .section-title {
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+  .text-underline {
+    color: #333;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .product-card {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    transition: transform 0.3s;
+  }
+  .product-card:hover {
+    transform: translateY(-5px);
+  }
+  .product-image-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 100%;
+    background: #f8f9fa;
+  }
+  .product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  .product-card:hover .product-image {
+    transform: scale(1.03);
+  }
+  .product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    color: #28a745;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .product-info {
+    padding: 0 10px;
+  }
+  .product-rating {
+    color: #ffc107;
+    font-size: 0.9rem;
+  }
+  .product-title {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 5px 0;
+  }
+  .product-price {
+    margin-top: 5px;
+  }
+  .current-price {
+    font-weight: 500;
+    color: #28a745;
+  }
+  .original-price {
+    font-size: 0.9rem;
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 8px;
+  }
+
+  /* Eco Statement */
+  .section-statement {
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .statement-icon {
+    font-size: 2.5rem;
+    color: #28a745;
+  }
+  .statement-title {
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+  .statement-text {
+    color: #666;
+    line-height: 1.8;
+  }
+
+  /* Image Gallery */
+  .gallery-item {
+    position: relative;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+  }
+  .gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .gallery-item:hover .gallery-overlay {
+    opacity: 1;
+  }
+  .gallery-overlay h3 {
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+  }
+  .gallery-link {
+    color: white;
+    text-decoration: none;
+    border: 1px solid white;
+    padding: 5px 20px;
+    border-radius: 3px;
+    transition: all 0.3s;
+  }
+  .gallery-link:hover {
+    background: white;
+    color: #333;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .hero-section {
+      height: 60vh;
+      min-height: 400px;
+    }
+    .hero-title {
+      font-size: 2rem;
+    }
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+    .gallery-item {
+      height: 200px;
+    }
+  }
+
+
+  /* Modern Product Grid Styles */
+  .section-products {
+    background: #fafafa;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    color: #222;
+    position: relative;
+    padding-bottom: 15px;
+  }
+  
+  .section-title:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 2px;
+    background: #28a745;
+  }
+  
+  .view-all-link {
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .view-all-link:hover {
+    color: #28a745;
+    transform: translateX(5px);
+  }
+  
+  .modern-product-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modern-product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  }
+  
+  .product-image-wrapper {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    padding-top: 120%; /* Adjust based on your image aspect ratio */
+  }
+  
+  .product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  
+  .modern-product-card:hover .product-image {
+    transform: scale(1.05);
+  }
+  
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 60%, rgba(0,0,0,0.05) 100%);
+  }
+  
+  .new-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #fff;
+    color: #28a745;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  
+  .discount-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff4757;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .product-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    flex-grow: 1;
+  }
+  
+  .product-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  .product-title a:hover {
+    color: #28a745;
+  }
+  
+  .save-icon {
+    color: #ddd;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    cursor: pointer;
+    padding: 5px;
+  }
+  
+  .save-icon:hover {
+    color: #ff4757;
+  }
+  
+  .product-meta {
+    margin-top: auto;
+  }
+  
+  .product-rating {
+    color: #ffc107;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  
+  .rating-count {
+    color: #999;
+    font-size: 0.8rem;
+    margin-left: 5px;
+  }
+  
+  .product-pricing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .current-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+  }
+  
+  .original-price {
+    font-size: 0.9rem;
+    color: #999;
+    text-decoration: line-through;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+    
+    .product-image-wrapper {
+      padding-top: 100%;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .view-all-link {
+      margin-top: 10px;
+    }
+  }
+
+</style>
 
 
 {% endblock %}

@@ -23,18 +23,16 @@
 				<aside class="col-md-6">
 					<article class="gallery-wrap">
 						<div class="img-big-wrap mainImage" style="overflow: hidden;">
-							<center><img src="{{ single_product.images.url }}"></center>
-						</div> <!-- img-big-wrap.// -->
+							<center><img id="main-image" src="{{ single_product.images.url }}" alt="Main Product Image"></center>
+						</div>
 
 					</article> <!-- gallery-wrap .end// -->
 
 					<ul class="thumb ml-10">
 						<li>
-							<a href="{{ single_product.images.url }}" target="mainImage"><img
-									src="{{ single_product.images.url }}" alt="Product Image"></a>
+							<a href="javascript:void(0);" class="thumbnail" data-image="{{ single_product.images.url }}"><img src="{{ single_product.images.url }}" alt="Product Image"></a>
 							{% for i in product_gallery %}
-							<a href="{{i.image.url}}" target="mainImage"><img src="{{i.image.url}}"
-									alt="Product Image"></a>
+							<a href="javascript:void(0);" class="thumbnail" data-image="{{ i.image.url }}"><img src="{{ i.image.url }}" alt="Product Image"></a>
 							{% endfor %}
 						</li>
 					</ul>
@@ -98,14 +96,6 @@
 									class="text">Add to Cart</span> <i class="fas fa-shopping-cart"></i> </a>
 							
 							{% endif %}
-
-							<!-- {% if in_wishlist %}
-							<a href="{% url 'remove_from_wishlist' single_product.id %}" class="btn btn-danger"> <span
-									class="text">Remove from Wishlist</span> <i class="fas fa-heart-broken"></i> </a>
-							{% else %}
-							<a href="{% url 'add_to_wishlist' single_product.id %}" class="btn btn-outline-danger">
-								<span class="text">Add to Wishlist</span> <i class="fas fa-heart"></i> </a>
-							{% endif %} -->
 
 							{% if in_wishlist %}
 								<button id="wishlist-btn" class="btn btn-danger" data-product-id="{{ single_product.id }}"> 
@@ -335,6 +325,23 @@
 	});
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all thumbnail links
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.querySelector('#main-image');
+
+        // Add click event listener to each thumbnail
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', function () {
+                // Get the image URL from the data-image attribute
+                const newImageSrc = this.getAttribute('data-image');
+                // Update the main image src
+                mainImage.src = newImageSrc;
+            });
+        });
+    });
+</script>
 
 
 

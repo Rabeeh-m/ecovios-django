@@ -1,4 +1,5 @@
 
+{% load static %}
 
 <!-- ========================= FOOTER ========================= -->
 <!doctype html>
@@ -7,147 +8,218 @@
         <meta charset="utf-8">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Molla</title>
-        <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
-        <link rel="stylesheet"href="assets/css/style.css">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="assets/css/all.min.css">
-        <link rel="stylesheet"href="https://unpkg.com/swiper/swiper-bundle.min.css"/>
-        <link rel="stylesheet" href="assets/css/uicons-regular-rounded.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/responsive.css">
-    </head>
-    <body>
-		<style>
+        <title>Ecovios - Sustainable Lifestyle</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
             footer.ft-v2 {
-                background-color: rgb(248, 245, 245);
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9f5e9 100%);
+                color: #495057;
+                padding: 3rem 0 0;
+                font-family: 'Poppins', sans-serif;
+                border-top: 1px solid #e0e0e0;
+            }
+            .footer-logo {
+                max-width: 180px;
+                margin-bottom: 1.5rem;
+                filter: brightness(0.9);
+            }
+            .widget-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                color: #2c3e50;
+                position: relative;
+                padding-bottom: 10px;
+            }
+            .widget-title:after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 50px;
+                height: 2px;
+                background: #28a745;
+            }
+            .widget-list li {
+                margin-bottom: 0.8rem;
+            }
+            .widget-list a {
+                color: #5a6268;
+                text-decoration: none;
+                transition: all 0.3s;
+                font-weight: 400;
+                display: block;
+            }
+            .widget-list a:hover {
+                color: #28a745;
+                padding-left: 8px;
+            }
+            .ft-info {
+                line-height: 1.8;
+                margin-bottom: 1.5rem;
+                color: #5a6268;
+                font-size: 0.95rem;
+            }
+            .footer-bottom {
+                border-top: 1px solid #d4d4d4;
+                padding: 1.5rem 0;
+                margin-top: 2rem;
+                background: rgba(255,255,255,0.7);
+            }
+            .footer-copyright {
+                color: #6c757d;
+                font-size: 0.9rem;
+            }
+            .socials a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                background: #e9ecef;
+                color: #495057;
+                border-radius: 50%;
+                transition: all 0.3s;
+                margin-right: 0.7rem;
+                font-size: 1rem;
+            }
+            .socials a:hover {
+                background: #28a745;
+                color: white;
+                transform: translateY(-3px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+            .newsletter-form {
+                display: flex;
+                margin-top: 1rem;
+            }
+            .newsletter-form input {
+                border-radius: 4px 0 0 4px;
+                border: 1px solid #ced4da;
+                border-right: none;
+                padding: 10px 15px;
+                width: 70%;
+            }
+            .newsletter-form .btn {
+                border-radius: 0 4px 4px 0;
+                background: #28a745;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                transition: all 0.3s;
+            }
+            .newsletter-form .btn:hover {
+                background: #218838;
+            }
+            .payment-methods {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 15px;
+            }
+            .payment-methods img {
+                height: 24px;
+                object-fit: contain;
+                filter: grayscale(30%);
+                transition: all 0.3s;
+            }
+            .payment-methods img:hover {
+                filter: grayscale(0%);
+                transform: scale(1.05);
+            }
+            .eco-badge {
+                background: #28a745;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 20px;
+                font-size: 0.8rem;
+                display: inline-flex;
+                align-items: center;
+            }
+            .eco-badge i {
+                margin-right: 5px;
+            }
+            @media (max-width: 768px) {
+                .widget {
+                    margin-bottom: 2rem;
+                }
+                .newsletter-form input {
+                    width: 65%;
+                }
             }
         </style>
-		<footer class="ft-v2 border-top">
-			<br>
-			<div class="w-100 ft-main">
-				<div class="container">
-					<div class="row">
-						<div class="col-lg-6 col-md-6 col-sm-12">
-							<div class="widget widget-about">
-								<a href="index.html" style="max-width: 11.0rem;display: block;">
-									<img class="footer-logo" src="assets/images/logo.webp" alt="">
-								</a>
-								<p class="ft-info">Magical dandelion seeds to misty fern leaves, we have the most soulful, earthy jewellery and stationery that you can get your hands on! Each piece is carefully curated with lots of love. You wouldn't say 'NO' to a bit of forest in your jewellery box now, would you?</p>
-								<div class="widget-info">
-									<div class="row">
-										<div class="col-sm-6 col-md-4">
-											<span class="widget-about-title">Got Question? Call us 24/7</span>
-											<a class="cnt-number" href="tel:+98765432">+91 8129786948</a>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-6">
-							<div class="widget">
-								<h4 class="widget-title">Useful Links</h4>
-								<ul class="widget-list list-unstyled">
-									<li>
-									<a href="about.html">About Midas</a>
-								</li>
-								<li>
-									<a href="#">How to shop on Ecovios</a>
-								</li>
-								<li>
-									<a href="faq.html">FAQ</a>
-								</li>
-								<li>
-									<a href="contact-us.html">Contact us</a>
-								</li>
-								<li>
-									<a href="#">Log in</a>
-								</li>
-							</ul>
-						</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-6">
-							<div class="widget">
-								<h4 class="widget-title">Customer Service</h4>
-								<ul class="widget-list list-unstyled">
-									<li>
-										<a href="#">Payment Methods</a>
-									</li>
-									<li>
-										<a href="#">Money-back</a>
-									</li>
-									<li>
-										<a href="#">Returns</a>
-									</li>
-									<li>
-										<a href="#">Shipping</a>
-									</li>
-									<li>
-										<a href="#">Terms and conditions</a>
-									</li>
-									<li>
-										<a href="#">Privacy Policy</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-6">
-							<div class="widget">
-								<h4 class="widget-title">My Account</h4>
-								<ul class="widget-list list-unstyled">
-									<li>
-										<a href="#">Sign In</a>
-									</li>
-									<li>
-										<a href="#">View Cart</a>
-									</li>
-									<li>
-										<a href="#">My Wishlist</a>
-									</li>
-									<li>
-										<a href="#">Track My Order</a>
-									</li>
-									<li><a href="#">Help</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<div class="footer-bottom">
-						<div class="row justify-content-between">
-							<div class="col-12 col-md-auto py-1">
-								<p class="footer-copyright m-0">Copyright © 2024 Ecovios. All Rights Reserved.</p>
-								<ul class="footer-menu list-unstyled">
-									<li>
-										<a href="#">Terms / Privacy Policy</a>
-									</li>
-								</ul>
-							</div>
-							<div class="col-12 col-md-auto py-1">
-								<div class="socials d-flex align-items-center gap-3">
-									<ul class="list-unstyled d-flex align-items-center flex-wrap gap-3">
-										<li><a href="#"><i class="fab fa-facebook-f"></i></a></li>&nbsp;&nbsp;
-										<li><a href="#"><i class="fab fa-twitter"></i></a></li>&nbsp;&nbsp;
-										<li><a href="#"><i class="fab fa-google-plus-g"></i></a></li>&nbsp;&nbsp;
-										<li><a href="#"><i class="fab fa-instagram"></i></a></li>&nbsp;&nbsp;
-										<li><a href="#"><i class="fab fa-youtube"></i></a></li>&nbsp;&nbsp;
-									</ul>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</footer>
-        
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-		<script>
-			$(document).ready(function(){
-				$('.thumb a').click(function(e){
-					e.preventDefault();
-					$('.mainImage img').attr('src', $(this).attr("href"));
-				})
-			})
-		</script>
-		<script src="assets/js/bootstrap.bundle.min.js"></script>
-	</body>
+    </head>
+    <body>
+        <footer class="ft-v2">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="widget widget-about">
+                            <a href="index.html">
+                                <img class="footer-logo" src="{% static 'images/Ecovios-logo.png' %}" alt="Ecovios">
+                            </a>
+                            <p class="ft-info">
+                                Ecovios is your destination for sustainable living. We offer eco-friendly products that combine style with environmental responsibility. Join us in making the world greener, one purchase at a time.
+                            </p>
+                            <div class="socials mb-4">
+                                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                                <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+                                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="widget">
+                            <h4 class="widget-title">Shop</h4>
+                            <ul class="widget-list">
+                                <li><a href="#">Eco Fashion</a></li>
+                                <li><a href="#">Home & Living</a></li>
+                                <li><a href="#">Beauty & Care</a></li>
+                                <li><a href="#">Stationery</a></li>
+                                <li><a href="#">New Arrivals</a></li>
+                                <li><a href="#">Best Sellers</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <div class="widget">
+                            <h4 class="widget-title">Support</h4>
+                            <ul class="widget-list">
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">FAQs</a></li>
+                                <li><a href="#">Shipping Policy</a></li>
+                                <li><a href="#">Returns & Exchanges</a></li>
+                                <li><a href="#">Order Tracking</a></li>
+                                <li><a href="#">Size Guide</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="widget">
+                            <h4 class="widget-title">Stay Connected</h4>
+                            <p>Subscribe to get updates on new products and special offers</p>
+                            <form class="newsletter-form">
+                                <input type="email" class="form-control" placeholder="Your email address" required>
+                                <button type="submit" class="btn">Subscribe</button>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </footer>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="{% static 'assets/js/bootstrap.bundle.min.js' %}"></script>
+    </body>
 </html>
 <!-- ========================= FOOTER END // ========================= -->
