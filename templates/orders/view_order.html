@@ -29,45 +29,62 @@
                         <p class="card-text mb-2"><strong>Total Amount:</strong> ₹ {{ order.order_total }}</p>
                     </div>
                 </div>
+
+
                 <div class="card mb-3">
-                    <h5 class="card-header">Ordered Products</h5>
-                    <div class="card-body">
-                        <table class="table table-borderless table-shopping-cart">
-                            <thead class="text-muted">
-                                <tr class="small text-uppercase">
-                                    <th scope="col">Product</th>
-                                    <th scope="col" width="120">Quantity</th>
-                                    <th scope="col" width="120">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for product in ordered_products %}
-                                <tr>
-                                    <td>
-                                        <figure class="itemside align-items-center">
-                                            <div class="aside">
-                                                <img src="{{ product.product.images.url }}" class="img-sm">
-                                            </div>
-                                            <figcaption class="info">
-                                                <a href="{{ product.product.get_url }}" class="title text-dark">{{ product.product.product_name }}</a>
-                                            </figcaption>
-                                        </figure>
-                                    </td>
-                                    <td>
-                                        <label for="">{{ product.quantity }}</label>
-                                    </td>
-                                    <td>
-                                        <div class="price-wrap">
-                                            <var class="price">₹ {{ product.sub_total  }}</var>
-                                            <small class="text-muted">₹ {{ product.product.price }} each </small>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <h5 class="card-header">Ordered Products</h5>
+    <div class="card-body">
+        <table class="table table-borderless table-shopping-cart">
+            <thead class="text-muted">
+                <tr class="small text-uppercase">
+                    <th scope="col">Product</th>
+                    <th scope="col" width="120">Quantity</th>
+                    <th scope="col" width="120">Price</th>
+                    <th scope="col" width="120">Delivery Charge</th>
+                    <th scope="col" width="120">Total Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in ordered_products %}
+                <tr>
+                    <td>
+                        <figure class="itemside align-items-center">
+                            <div class="aside">
+                                <img src="{{ product.product.images.url }}" class="img-sm">
+                            </div>
+                            <figcaption class="info">
+                                <a href="{{ product.product.get_url }}" class="title text-dark">{{ product.product.product_name }}</a>
+                            </figcaption>
+                        </figure>
+                    </td>
+                    <td>
+                        <label for="">{{ product.quantity }}</label>
+                    </td>
+                    <td>
+                        <div class="price-wrap">
+                            <var class="price">₹ {{ product.sub_total }}</var>
+                            <small class="text-muted">₹ {{ product.product.price }} each </small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="price-wrap">
+                            <var class="price">₹ {{ delivery_charge }}</var>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="price-wrap">
+                            <var class="price">₹ {{ order.order_total }}</var>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
             </aside>
             <a href="{% url 'download_invoice' order.order_number %}" class="btn btn-primary">Download Invoice</a>
         </div>

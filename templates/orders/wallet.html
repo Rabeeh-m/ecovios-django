@@ -2,8 +2,6 @@
 {% load static %}
 
 {% block content %}
-
-<!-- templates/orders/wallet.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,31 +16,57 @@
             <div class="col-12 text-center">
                 <h1 class="display-4">{{ request.user.username }}'s Wallet</h1>
                 <p class="lead">Total Amount: <strong>₹ {{ wallet.total_amount }}</strong></p>
-                <p class="lead">Referral Code: <strong>{{ referral_code }}</strong></p> <!-- Display the referral code -->
+                <p class="lead">Referral Code: <strong>{{ referral_code }}</strong></p>
             </div>
         </div>
 
         <div class="row mt-5">
             <div class="col-12">
-                <h2 class="mb-4">Cancelled Orders</h2>
+                <h2 class="mb-4">Orders</h2>
+                {% if all_orders.exists %}
                 <table class="table table-hover">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Order ID</th>
                             <th scope="col">Order Date</th>
+                            <th scope="col">Order Type</th>
                             <th scope="col">Total Price</th>
+                            <th scope="col">Products</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for order in cancelled_orders %}
+                        {% for order in all_orders %}
                         <tr>
                             <td>{{ order.order_number }}</td>
-                            <td>{{ order.created_at }}</td>
-                            <td>₹ {{ order.order_total }}</td>
+                            <td>{{ order.created_at|date:"F d, Y" }}</td>
+                            <td>
+                                {% if order.status == 'Cancelled' %}
+                                    Cancelled
+                                {% elif order.status == 'Return' %}
+                                    Returned
+                                {% else %}
+                                    Wallet Payment
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.status == 'Cancelled' or order.status == 'Return' %}
+                                    <span class="text-success">+ ₹ {{ order.order_total }}</span>
+                                {% else %}
+                                    <span class="text-danger">- ₹ {{ order.order_total }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for order_product in order.orderproduct_set.all %}
+                                    {{ order_product.product.product_name }} (Qty: {{ order_product.quantity }})<br>
+                                {% endfor %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+                {% else %}
+                <p>No orders found.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -51,5 +75,4 @@
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
-
 {% endblock %}

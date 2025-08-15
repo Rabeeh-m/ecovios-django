@@ -81,12 +81,15 @@
                       </tr>
                     {% endfor %}
                     </tbody>
-                    <tfoot>               
-
-                    <tr>
-                      <th colspan="2" class="text-right">Grand Total:</th>
-                      <th class="text-center">₹ {{ grand_total }}</th>
-                    </tr>
+                    <tfoot>
+                      <tr>
+                        <th colspan="2" class="text-right">Delivery Charge:</th>
+                        <td class="text-center">₹ {{ delivery_charge }}</td>
+                      </tr>
+                      <tr>
+                        <th colspan="2" class="text-right">Grand Total:</th>
+                        <td class="text-center">₹ {{ grand_total }}</td>
+                      </tr>
                     </tfoot>
                   </table>
                 </div>

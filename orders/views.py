@@ -151,10 +151,11 @@ def cod(request):
     order.order_total = total
     order.save()
 
-
+    user = request.user
     address = order.address
     order_total = order.order_total
     cart_items = CartItem.objects.filter(user=current_user)
+    wallet_balance = Wallet.objects.get(user=user).total_amount
 
     context = {
         'order': order,
@@ -163,7 +164,8 @@ def cod(request):
         'total': total, 
         'order_total' : order_total,
         'discount' : discount,
-        'grand_total': grand_total
+        'grand_total': grand_total,
+        'wallet_balance' : wallet_balance
         
     }
 
@@ -286,7 +288,7 @@ def view_order(request, order_number):
         ordered_product.sub_total = ordered_product.product_price * ordered_product.quantity
         
     address = order.address
-    
+    delivery_charge = 50
     # total -= float(order.coupon_amount)
 
 
@@ -294,6 +296,7 @@ def view_order(request, order_number):
         'order': order,
         'ordered_products': ordered_products,
         'address' : address,
+        'delivery_charge': delivery_charge
     }
     return render(request, 'orders/view_order.html', context)
 
@@ -421,7 +424,7 @@ def order_complete(request):
             total = subtotal - discount
 
         grand_total =order.order_total
-
+        delivery_charge = 50.0
             
         payment = Payment.objects.get(payment_id=transID)
         context = {
@@ -433,6 +436,7 @@ def order_complete(request):
             'payment': payment,
             'subtotal': subtotal,
             'total' : total,
+            'delivery_charge': delivery_charge,
             'grand_total': grand_total,
         }
         return render(request, 'orders/order_complete.html', context)
@@ -446,6 +450,12 @@ def cancel_order(request, order_number):
     try:
         order = get_object_or_404(Order, order_number=order_number, user=request.user)
         if order.status != 'Cancelled':
+            # Restock products
+            ordered_products = OrderProduct.objects.filter(order=order)
+            for ordered_product in ordered_products:
+                product = ordered_product.product
+                product.stock += ordered_product.quantity
+                product.save()
             order.status = 'Cancelled'
             order.save()
 
@@ -468,12 +478,17 @@ def return_order(request, order_number):
         order.status = 'Return'
         order.save()
 
-        # Check if payment method is not 'Cash on Delivery'
-        #if order.payment and order.payment.payment_method != 'Cash on Delivery':
         # Update the wallet
         wallet, created = Wallet.objects.get_or_create(user=order.user)
         wallet.total_amount += Decimal(order.order_total)
         wallet.save()
+        
+        # Restock products
+        ordered_products = OrderProduct.objects.filter(order=order)
+        for ordered_product in ordered_products:
+            product = ordered_product.product
+            product.stock += ordered_product.quantity
+            product.save()
 
         messages.success(request, 'Order Returned and wallet updated successfully.')
 
@@ -683,6 +698,7 @@ from django.http import JsonResponse
 from .models import Order, Wallet, OrderProduct
 from carts.models import CartItem
 from accounts.models import UserAddress
+from django.db.models import Q
 
 @login_required
 def wallet_payment(request):
@@ -692,8 +708,8 @@ def wallet_payment(request):
     total = sum(item.sub_total() for item in cart_items)  # Call sub_total as a method
     
     # Assuming you have logic to calculate discount; if not, set it to 0
-    discount = 0  # Replace with your discount calculation logic
-
+    discount = Decimal('0') 
+    delivery_charge = Decimal('50')
     grand_total = (total - discount) + 50  # Assuming 50 is the delivery charge
     wallet_balance = Wallet.objects.get(user=user).total_amount
 
@@ -702,6 +718,7 @@ def wallet_payment(request):
         'cart_items': cart_items,
         'total': total,
         'discount': discount,
+        'delivery_charge': delivery_charge,
         'grand_total': grand_total,
         'wallet_balance': wallet_balance,
     }
@@ -724,8 +741,8 @@ def wallet_order(request):
     total = sum(item.sub_total() for item in cart_items)
     
     # Assuming you have logic to calculate discount; if not, set it to 0
-    discount = 0  # Replace with your discount calculation logic
-    
+    discount = Decimal('0')
+    delivery_charge = Decimal('50')
     grand_total = (total - discount) + 50  # Assuming 50 is the delivery charge
     wallet = Wallet.objects.get(user=user)
 
@@ -788,8 +805,10 @@ def wallet_order(request):
             'total': total, 
             'order_total' : order_total,
             'discount' : discount,
+            'delivery_charge': delivery_charge,
             'grand_total': grand_total,
             'ordered_products': ordered_products,
+            'payment': payment,
         }
 
         return render(request, 'orders/confirm_order.html', context)
@@ -797,9 +816,38 @@ def wallet_order(request):
         # If the wallet balance is insufficient
         return render(request, 'orders/wallet_payment.html', {
             'error': 'Insufficient wallet balance to complete the order.',
+            'address': address,
+            'cart_items': cart_items,
             'total': total,
             'discount': discount,
+            'delivery_charge': delivery_charge,
             'grand_total': grand_total,
             'wallet_balance': wallet.total_amount,
         })
     
+
+@login_required
+def wallet_view(request):
+    user = request.user
+    wallet, created = Wallet.objects.get_or_create(user=user)
+    # cancelled_orders = Order.objects.filter(user=user, status='Cancelled').order_by('-created_at')
+    # wallet_orders = Order.objects.filter(user=user, payment__payment_method='Wallet')
+    all_orders = Order.objects.filter(
+        Q(user=user) & (
+            Q(payment__payment_method='Wallet') | 
+            Q(status='Return') | 
+            (Q(status='Cancelled') & ~Q(payment__payment_method='Cash on Delivery'))
+        )
+    ).order_by('-created_at')
+    
+    # Generate or retrieve referral code (assuming you have a referral system)
+    referral_code = getattr(user, 'referral_code', 'No referral code')  # Adjust based on your model
+    
+    context = {
+        'wallet': wallet,
+        # 'cancelled_orders': cancelled_orders,
+        # 'wallet_orders': wallet_orders,
+        'all_orders': all_orders,
+        'referral_code': referral_code,
+    }
+    return render(request, 'orders/wallet.html', context)

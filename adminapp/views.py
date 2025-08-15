@@ -15,7 +15,7 @@ from django.views.decorators.cache import cache_control
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from orders.models import Order, OrderProduct
+from orders.models import Order, OrderProduct, Wallet
 
 from django.db.models import Sum, Q
 from django.utils import timezone
@@ -50,6 +50,7 @@ from .forms import CouponForm
 from django.db import models 
 from django.db.models import Sum, F
 from accounts.models import UserAddress
+
 
 
 User = get_user_model()
@@ -384,6 +385,23 @@ def editproduct(request, product_id):
     return render(request, 'editproduct.html', {'form': form, 'product': product})
 
 
+# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+# @admin_required
+# def deleteproduct(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
+    
+#     if 'hard_delete' in request.path:
+#         # Perform hard delete
+#         product.delete()
+#         return redirect('productlist')
+#     elif request.GET.get('soft_delete') == 'True':
+#         # Perform soft delete
+#         product.is_available = False
+#         product.save()
+#         return redirect('productlist')
+    
+#     return redirect('productlist')
+
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
 def deleteproduct(request, product_id):
@@ -392,14 +410,18 @@ def deleteproduct(request, product_id):
     if 'hard_delete' in request.path:
         # Perform hard delete
         product.delete()
+        messages.success(request, f"Product '{product.product_name}' has been permanently deleted.")
         return redirect('productlist')
-    elif request.GET.get('soft_delete') == 'True':
+    elif request.method == 'POST':
         # Perform soft delete
-        product.is_deleted = True
+        product.is_available = False
         product.save()
+        messages.success(request, f"Product '{product.product_name}' has been soft deleted.")
         return redirect('productlist')
     
     return redirect('productlist')
+
+
 
 def delete_gallery_image(request, product_id, image_id):
     if request.method == 'POST':
@@ -441,6 +463,20 @@ def manage_orders(request):
         elif action == 'cancel':
             order.status = 'Cancelled'
             order.save()
+            # Restock products
+            ordered_products = OrderProduct.objects.filter(order=order)
+            for ordered_product in ordered_products:
+                product = ordered_product.product
+                product.stock += ordered_product.quantity
+                product.save()
+            
+            # Check if payment method is not 'Cash on Delivery'
+            if order.payment and order.payment.payment_method != 'Cash on Delivery':
+            # Update the wallet
+                wallet, created = Wallet.objects.get_or_create(user=order.user)
+                wallet.total_amount += Decimal(order.order_total)
+                wallet.save()
+
             messages.success(request, 'Order cancelled successfully.')
 
     query = request.GET.get('q')
