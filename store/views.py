@@ -7,12 +7,13 @@ from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
 from carts.views import _cart_id
-from carts.models import CartItem
 from django.db.models import Q,Avg
 from django.utils import timezone
 from .forms import ReviewForm
 from django.contrib import messages
-# Create your views here.
+from django.shortcuts import Http404
+from carts.models import CartItem, Cart
+
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
@@ -89,14 +90,6 @@ def store(request, category_slug=None):
     }
 
     return render(request, 'store/store.html', context)
-
-
-
-from django.shortcuts import render, redirect, get_object_or_404, Http404
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import cache_control
-from store.models import Product, ProductGallery, ReviewRating
-from carts.models import CartItem, Cart
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -199,17 +192,6 @@ def remove_from_wishlist(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     Wishlist.objects.filter(user=request.user, product=product).delete()
     return redirect('product_detail', product.category.slug, product.slug)
-
-
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-# @login_required(login_url='login')
-# def wishlist(request):
-#     wishlists = Wishlist.objects.filter(user=request.user)
-#     context = {
-#         'wishlists': wishlists,
-#     }
-#     return render(request, 'store/wishlist.html', context)
-
 
 
 from django.shortcuts import get_object_or_404, redirect, render

@@ -21,12 +21,19 @@
 <section class="section-categories py-5 bg-white">
   <div class="container">
     <div class="d-flex flex-wrap justify-content-center category-pills">
-      <a href="#" class="category-pill active">All</a>
-      <a href="#" class="category-pill">Fashion</a>
-      <a href="#" class="category-pill">Home</a>
-      <a href="#" class="category-pill">Beauty</a>
-      <a href="#" class="category-pill">Stationery</a>
-      <a href="#" class="category-pill">New Arrivals</a>
+      <!-- All Products pill -->
+      <a href="{% url 'store' %}" 
+         class="category-pill {% if not request.GET.category %}active{% endif %}">
+         All
+      </a>
+
+      <!-- Dynamic categories -->
+      {% for category in links %}
+        <a href="{{ category.get_url }}" 
+           class="category-pill {% if request.GET.category == category.slug %}active{% endif %}">
+           {{ category.category_name }}
+        </a>
+      {% endfor %}
     </div>
   </div>
 </section>

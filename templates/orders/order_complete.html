@@ -2,110 +2,235 @@
 {% load static %}
 
 {% block content %}
+<!-- Include Bootstrap 5.3 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<!-- Include Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-<div class="container" style="margin-top: 50px;">
-  <center><i class="fas fa-check-circle" style="font-size: 72px;margin-bottom: 20px;color: #28A745;"></i></center>
-  <h2 class="text-center">Payment Successful</h2>
-  <br>
-  <div class="text-center">
-    <a href="{% url 'store' %}" class="btn btn-success">Shop more</a>
-  </div>
-</div>
+<style>
+    .payment-section {
+        background: linear-gradient(135deg, #e6f4ea 0%, #f8f9fa 100%);
+        min-height: 100vh;
+        padding: 60px 0;
+        font-family: 'Inter', sans-serif;
+    }
+    .success-icon {
+        font-size: 80px;
+        color: #28a745;
+        animation: bounceIn 0.6s ease;
+    }
+    .card {
+        border: none;
+        border-radius: 15px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 30px;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+    }
+    .invoice-logo img {
+        max-height: 50px;
+        transition: transform 0.3s ease;
+    }
+    .invoice-logo img:hover {
+        transform: scale(1.05);
+    }
+    .invoice-from ul, .invoice-details ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .invoice-from li, .invoice-details li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+    .invoice-details .well {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .table-responsive {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .table {
+        margin-bottom: 0;
+        background: #fff;
+    }
+    .table th {
+        background: #e9ecef;
+        padding: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        color: #343a40;
+    }
+    .table td {
+        vertical-align: middle;
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .table tfoot th, .table tfoot td {
+        font-weight: 600;
+        color: #212529;
+    }
+    .btn-success {
+        background: #28a745;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-success:hover {
+        background: #218838;
+        transform: translateY(-2px);
+    }
+    .invoice-footer {
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+    @media (max-width: 768px) {
+        .payment-section {
+            padding: 30px 0;
+        }
+        .success-icon {
+            font-size: 60px;
+        }
+        .table {
+            font-size: 0.85rem;
+        }
+        .invoice-logo img {
+            max-height: 40px;
+        }
+        .btn-success {
+            padding: 10px 20px;
+        }
+    }
+</style>
 
-<div class="container" style="margin: 0 auto;width: 50%;padding: 50px;background: #f1f1f1;margin-top: 50px;margin-bottom: 50px;">
-  <div class="row invoice row-printable">
-    <div class="col-md-12">
-      <!-- col-lg-12 start here -->
-      <div class="panel panel-default plain" id="dash_0">
-        <!-- Start .panel -->
-        <div class="panel-body p30">
-          <div class="row">
-            <!-- Start .row -->
-            <div class="col-lg-6">
-              <!-- col-lg-6 start here -->
-              <div class="invoice-logo"><img src="{% static '/images/Ecovios-logo.png' %}" alt="Invoice logo"
-                                             style="max-height: 40px;"></div>
-            </div>
-            <!-- col-lg-6 end here -->
-            <div class="col-lg-6">
-              <!-- col-lg-6 start here -->
-              <div class="invoice-from">
-                <ul class="list-unstyled text-right">
-                  <li><strong>Invoiced To</strong></li>
-                  <li>{{ address.full_name }}</li>
-                  <li>{{ address.full_address }}</li>
-                  <li>{{ address.city }}, {{ address.state }}</li>
-                  <li>{{ address.country }}</li>
-                </ul>
-              </div>
-            </div>
-            <!-- col-lg-6 end here -->
-            <div class="col-lg-12">
-              <!-- col-lg-12 start here -->
-              <div class="invoice-details mt25">
-                <div class="well">
-                  <ul class="list-unstyled mb0">
-                    <li><strong>Order</strong> #{{ order_number }}</li>
-                    <li><strong>Transaction ID</strong> {{ transID }}</li>
-                    <li><strong>Order Date:</strong> {{ order.created_at }}</li>
-                    <li><strong>Status:</strong> {{ payment.status }}</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div class="invoice-items">
-                <div class="table-responsive" style="overflow: hidden; outline: none;" tabindex="0">
-                  <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                      <th class="per70 text-center">Products</th>
-                      <th class="per5 text-center">Qty</th>
-                      <th class="per25 text-center">Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for item in ordered_products %}
-                      <tr>
-                        <td>{{ item.product.product_name }}
-                          <p class="text-muted small">
-                            {% if item.variations.all %}
-                              {% for i in item.variations.all %}
-                                {{ i.variation_category | capfirst }} :
-                                {{ i.variation_value | capfirst}}<br>
-                              {% endfor %}
-                            {% endif %}
-                          </p>
-                        </td>
-                        <td class="text-center">{{ item.quantity }}</td>
-                        <td class="text-center">₹ {{ item.product_price }}</td>
-                      </tr>
-                    {% endfor %}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th colspan="2" class="text-right">Delivery Charge:</th>
-                        <td class="text-center">₹ {{ delivery_charge }}</td>
-                      </tr>
-                      <tr>
-                        <th colspan="2" class="text-right">Grand Total:</th>
-                        <td class="text-center">₹ {{ grand_total }}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
-              <div class="invoice-footer mt25">
-                <p class="text-center">Thank you for shopping with us!</p>
-              </div>
-            </div>
-            <!-- col-lg-12 end here -->
-          </div>
-          <!-- End .row -->
-        </div>
-      </div>
-      <!-- End .panel -->
+<section class="payment-section">
+    <div class="container text-center fade-in">
+        <i class="fas fa-check-circle success-icon mb-4"></i>
+        <h2 class="mb-4" style="color: #28a745; font-weight: 700;">Payment Successful</h2>
+        <a href="{% url 'store' %}" class="btn btn-success mb-5">
+            <i class="bi bi-cart me-2"></i>Shop More
+        </a>
     </div>
-    <!-- col-lg-12 end here -->
-  </div>
-</div>
+
+    <div class="container fade-in" style="max-width: 800px;">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="invoice-logo">
+                            <img src="{% static '/images/Ecovios-logo.png' %}" alt="Ecovios Logo" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="invoice-from text-md-end">
+                            <ul class="list-unstyled">
+                                <li><strong>Invoiced To</strong></li>
+                                <li>{{ address.full_name }}</li>
+                                <li>{{ address.full_address }}</li>
+                                <li>{{ address.city }}, {{ address.state }}</li>
+                                <li>{{ address.country }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="invoice-details mt-4">
+                            <div class="well">
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>Order:</strong> #{{ order_number }}</li>
+                                    <li><strong>Transaction ID:</strong> {{ transID }}</li>
+                                    <li><strong>Order Date:</strong> {{ order.created_at }}</li>
+                                    <li><strong>Status:</strong> 
+                                        <span class="badge bg-{% if payment.status == 'Completed' %}success{% else %}warning{% endif %}">
+                                            {{ payment.status }}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="invoice-items mt-4">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Products</th>
+                                            <th class="text-center" style="width: 100px;">Qty</th>
+                                            <th class="text-center" style="width: 120px;">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in ordered_products %}
+                                        <tr class="fade-in">
+                                            <td>
+                                                {{ item.product.product_name }}
+                                                <p class="text-muted small mb-0">
+                                                    {% if item.variations.all %}
+                                                        {% for i in item.variations.all %}
+                                                            {{ i.variation_category | capfirst }}: {{ i.variation_value | capfirst }}<br>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </p>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light text-dark">{{ item.quantity }}</span>
+                                            </td>
+                                            <td class="text-center text-success">₹ {{ item.product_price }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="2" class="text-end">Discount:</th>
+                                            <td class="text-center text-danger">₹ {{ coupon_discount }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" class="text-end">Delivery Charge:</th>
+                                            <td class="text-center">₹ {{ delivery_charge }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" class="text-end">Grand Total:</th>
+                                            <td class="text-center text-success fw-bold">₹ {{ grand_total }}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="invoice-footer mt-4 text-center">
+                            <p>Thank you for shopping with us!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Include Bootstrap 5.3 JS for interactivity -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 {% endblock %}

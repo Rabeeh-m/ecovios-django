@@ -58,11 +58,6 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
-
-
-
-# Create your views here.
-
 def admin_required(view_func):
     @login_required(login_url='alogin')
     def wrapper(request, *args, **kwargs):
@@ -93,7 +88,6 @@ def adminlogin(request):
             error_message = "Invalid credentials or not a superuser"
     
     return render(request, 'adminlogin.html', {'error_message': error_message})
-
 
 
 def ahome(request):
@@ -132,7 +126,6 @@ def ahome(request):
     total_orders = orders.count()
     total_order_amount = orders.aggregate(Sum('order_total'))['order_total__sum'] or 0
 
-
     # Define the current time
     now = timezone.now()
 
@@ -165,9 +158,6 @@ def ahome(request):
     categories = [item['product__category__category_name'] for item in sales_by_category]
     category_sales = [item['total_sales'] for item in sales_by_category]
 
-
-
-
     context = {
         'chart_data': chart_data,
         'total_orders' : total_orders,
@@ -181,8 +171,7 @@ def ahome(request):
         'category_sales': category_sales,
 
     }
-    return render(request, 'ahome.html', context)
-                 
+    return render(request, 'ahome.html', context)          
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -211,7 +200,6 @@ def user_list(request):
         'search_query': search_query,
     }
     return render(request, 'userlist.html', context)
-
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -256,9 +244,6 @@ def addcategory(request):
         )
         messages.success(request, 'Category added successfully.')
         return redirect('categorylist')
-    
-    
-
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -290,7 +275,6 @@ def editcategory(request, category_id):
     return render(request, 'categoryform.html', {'category': category})
 
 
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
 def deletecategory(request, category_id, soft_delete=True):
@@ -308,7 +292,6 @@ def deletecategory(request, category_id, soft_delete=True):
         return redirect('categorylist')
     
     return render(request, 'deletecategory.html', {'category': category})
-
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -347,7 +330,6 @@ def productlist(request):
     return render(request, 'productlist.html', context)
 
 
-
 def addproduct(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -384,23 +366,6 @@ def editproduct(request, product_id):
 
     return render(request, 'editproduct.html', {'form': form, 'product': product})
 
-
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-# @admin_required
-# def deleteproduct(request, product_id):
-#     product = get_object_or_404(Product, id=product_id)
-    
-#     if 'hard_delete' in request.path:
-#         # Perform hard delete
-#         product.delete()
-#         return redirect('productlist')
-#     elif request.GET.get('soft_delete') == 'True':
-#         # Perform soft delete
-#         product.is_available = False
-#         product.save()
-#         return redirect('productlist')
-    
-#     return redirect('productlist')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
@@ -498,8 +463,6 @@ def manage_orders(request):
     return render(request, 'order_management.html', {'orders': orders})
 
 
-
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
 def sales_report(request):
@@ -580,7 +543,6 @@ def sales_report(request):
         'orders': orders_page,
     }
     return render(request, 'sales_report.html', context)
-
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -667,7 +629,6 @@ def download_pdf(request):
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
 
     return response
-
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -757,7 +718,6 @@ def download_excel(request):
     return response
 
 
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
 def coupon_management(request):
@@ -787,7 +747,6 @@ def delete_coupon(request, coupon_id):
     return redirect('coupon_management')
 
 
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
 def top_selling(request):
@@ -811,7 +770,6 @@ def top_selling(request):
         'products': ranked_products,
         'categories': ranked_categories
     })
-
 
 
 @admin_required
@@ -928,8 +886,6 @@ def download_ledger_pdf(request):
     return buffer
 
 
-
-# views.py
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @admin_required
 def order_details(request, order_id):

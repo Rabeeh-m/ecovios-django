@@ -15,6 +15,7 @@ from django.views.decorators.cache import cache_control
 from django.http import JsonResponse
 from django.utils import timezone
 
+
 def _cart_id(request):
     if not request.session.session_key:
         request.session.create()
@@ -117,48 +118,6 @@ def remove_cart_item(request, product_id):
     return redirect('cart')
 
 
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-# @login_required(login_url='login')
-# def apply_coupon(request):
-#     if request.method == 'POST':
-        
-#         code = request.POST.get('code')
-#         try:
-#             coupon = Coupon.objects.get(code=code, active=True, valid_from__lte=datetime.now(), valid_to__gte=datetime.now())
-#             if request.user.is_authenticated:
-#                 cart = Cart.objects.filter(cartitem__user=request.user).first()
-#             else:
-#                 cart = Cart.objects.get(cart_id=_cart_id(request))
-#             cart.coupon = coupon
-#             # cart = cart.first()
-#             cart.save()
-            
-#             total = 0
-#             quantity = 0
-#             cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-#             for item in cart_items:
-#                 total += (item.product.price * item.quantity)
-#                 quantity += item.quantity
-#             discount = cart.coupon.discount
-#             grand_total = total - discount
-            
-#             return JsonResponse({
-#                 'total': total,
-#                 'grand_total': grand_total,
-#                 'discount': discount,
-#                 'coupon_applied': True,
-#                 'message': 'Coupon applied successfully!'
-#             })
-#         except Coupon.DoesNotExist:
-#             return JsonResponse({
-#                 'total': total,
-#                 'grand_total': grand_total,
-#                 'discount': 0,
-#                 'coupon_applied': False,
-#                 'message': 'Invalid coupon code or the coupon has expired.'
-#             })
-
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def apply_coupon(request):
@@ -245,35 +204,6 @@ def remove_coupon(request):
         })
 
 
-# @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-# @login_required(login_url='login')
-# def cart(request, total=0, quantity=0, cart_items=None):
-#     cart = None  # Initialize cart variable
-#     try:
-#         cart = Cart.objects.get(cart_id=_cart_id(request))
-#         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
-#         for cart_item in cart_items:
-#             total += (cart_item.product.price * cart_item.quantity)
-#             quantity += cart_item.quantity
-#     except ObjectDoesNotExist:
-#         pass
-    
-#     discount = 0
-#     grand_total = total
-#     if cart and cart.coupon:
-#         discount = cart.coupon.discount
-#         grand_total = total - discount
-    
-#     context = {
-#         'total' : total,
-#         'grand_total' : grand_total,
-#         'quantity' : quantity,
-#         'cart_items' : cart_items,
-#         'coupon': cart.coupon,
-#         'discount': discount,
-#     }
-#     return render(request, 'store/cart.html', context)
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def cart(request, total=0, quantity=0, cart_items=None):
@@ -310,14 +240,6 @@ def cart(request, total=0, quantity=0, cart_items=None):
 
     return render(request, 'store/cart.html', context)
 
-
-
-from django.shortcuts import render, redirect
-from django.views.decorators.cache import cache_control
-from django.contrib.auth.decorators import login_required
-from store.models import Product
-from carts.models import Cart, CartItem
-from accounts.models import UserAddress
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
@@ -377,13 +299,6 @@ def checkout(request):
     return render(request, 'store/checkout.html', context)
 
 
-
-
-
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import CartItem
-
 def update_cart_quantity(request, product_id):
     cart_item = get_object_or_404(CartItem, product__id=product_id)
     
@@ -400,9 +315,6 @@ def update_cart_quantity(request, product_id):
         'success': True,
         'new_quantity': cart_item.quantity
     })
-
-
-
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)

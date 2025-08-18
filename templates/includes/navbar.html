@@ -10,7 +10,7 @@
     <div class="announcement-bar">
         <div class="container">
             <div class="announcement-text">
-                <i class="fas fa-truck"></i> Free shipping on orders over ₹500
+                <i class="fas fa-truck"></i> Shipping available all over India.
             </div>
             <div class="announcement-links">
                 <a href="#">About Us</a>
@@ -67,7 +67,7 @@
                             <i class="far fa-heart" style="font-size: 1.6rem;"></i>
                         </a>
                         <a href="{% url 'cart' %}" class="action-icon" title="Cart">
-                            <i class="fas fa-shopping-bag" style="font-size: 1.6rem;"></i>
+                            <i class="fas fa-shopping-cart" style="font-size: 1.6rem;"></i>
                             {% if cart_count > 0 %}
                             <span class="cart-count">{{ cart_count }}</span>
                             {% endif %}
@@ -94,20 +94,6 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <!-- Secondary Navigation -->
-    <nav class="secondary-nav">
-        <div class="container">
-            <ul class="nav-links">
-                <li><a href="{% url 'store' %}?category=new-arrivals">New Arrivals</a></li>
-                <li><a href="{% url 'store' %}?category=best-sellers">Best Sellers</a></li>
-                <li><a href="{% url 'store' %}?category=eco-fashion">Eco Fashion</a></li>
-                <li><a href="{% url 'store' %}?category=home-living">Home & Living</a></li>
-                <li><a href="{% url 'store' %}?category=beauty">Beauty</a></li>
-                <li><a href="{% url 'store' %}?category=on-sale">On Sale</a></li>
-            </ul>
         </div>
     </nav>
 </header>

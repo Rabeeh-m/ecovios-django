@@ -17,14 +17,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-import datetime
-from carts.models import CartItem
-from orders.models import Order
-from accounts.models import UserAddress
-from store.models import Product
+from django.db.models import Q
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from io import BytesIO
 
 @login_required(login_url='login')
 def place_order(request):
@@ -279,9 +276,17 @@ def order_management(request):
     return render(request, 'orders/order_management.html', context)
 
 
-
 def view_order(request, order_number):
-    order = get_object_or_404(Order, order_number=order_number, user=request.user)
+    # order = get_object_or_404(Order, order_number=order_number, user=request.user)
+    orders = Order.objects.filter(order_number=order_number, user=request.user)
+    if orders.count() > 1:
+        # Log a warning or take corrective action (e.g., use the most recent order)
+        order = orders.order_by('-created_at').first()  # Use the most recent order
+        # Optionally log the issue for debugging
+        print(f"Warning: Multiple orders found for order_number={order_number}. Using order ID={order.id}")
+    else:
+        order = get_object_or_404(Order, order_number=order_number, user=request.user)
+        
     ordered_products = OrderProduct.objects.filter(order=order)
 
     for ordered_product in ordered_products:
@@ -289,14 +294,16 @@ def view_order(request, order_number):
         
     address = order.address
     delivery_charge = 50
-    # total -= float(order.coupon_amount)
-
-
+    # Calculate grand_total: order_total + delivery_charge - coupon_amount
+    grand_total = order.order_total + delivery_charge - float(order.coupon_amount)
+    coupon_discount = order.coupon_amount
     context = {
         'order': order,
         'ordered_products': ordered_products,
-        'address' : address,
-        'delivery_charge': delivery_charge
+        'address': address,
+        'delivery_charge': delivery_charge,
+        'coupon_discount': coupon_discount,
+        'grand_total': grand_total  # Add grand_total to the context
     }
     return render(request, 'orders/view_order.html', context)
 
@@ -379,16 +386,6 @@ def payments(request):
     # Clear the cart
     CartItem.objects.filter(user=request.user).delete()
 
-    # Send confirmation email
-    # mail_subject = 'Thank you for your order'
-    # message = render_to_string('orders/order_received_email.html', {
-    #     'user': request.user,
-    #     'order': order,
-    # })
-    # to_email = request.user.email
-    # send_email = EmailMessage(mail_subject, message, to=[to_email])
-    # send_email.send()
-
     # Return a JsonResponse with order and transaction details
     data = {
         'order_number': order.order_number,
@@ -425,7 +422,7 @@ def order_complete(request):
 
         grand_total =order.order_total
         delivery_charge = 50.0
-            
+        coupon_discount = order.coupon_amount
         payment = Payment.objects.get(payment_id=transID)
         context = {
             'order': order,
@@ -436,6 +433,7 @@ def order_complete(request):
             'payment': payment,
             'subtotal': subtotal,
             'total' : total,
+            'coupon_discount' : coupon_discount,
             'delivery_charge': delivery_charge,
             'grand_total': grand_total,
         }
@@ -448,7 +446,14 @@ from decimal import Decimal
 
 def cancel_order(request, order_number):
     try:
-        order = get_object_or_404(Order, order_number=order_number, user=request.user)
+        # order = get_object_or_404(Order, order_number=order_number, user=request.user)
+        orders = Order.objects.filter(order_number=order_number, user=request.user)
+        if orders.count() > 1:
+            print(f"Multiple orders found for order_number={order_number}, user={request.user.username}. Using most recent.")
+            order = orders.order_by('-created_at').first()  # Use the most recent order
+        else:
+            order = get_object_or_404(Order, order_number=order_number, user=request.user)
+            
         if order.status != 'Cancelled':
             # Restock products
             ordered_products = OrderProduct.objects.filter(order=order)
@@ -521,26 +526,6 @@ def wallet_view(request):
     }
     return render(request, 'orders/wallet.html', context)
 
-
-
-# def cancel_order(request, order_number):
-#     try:
-#         order = Order.objects.get(order_number=order_number, user=request.user)
-#         order.status = 'Canceled'
-#         order.delete()
-#         # order.save()
-#         return redirect('order_management')
-#     except Order.DoesNotExist:
-#         return render(request, 'orders/order_not_found.html', {'order_number': order_number})
-
-
-
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
-from io import BytesIO
 
 def download_invoice(request, order_number):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
@@ -688,17 +673,6 @@ def buy_now(request):
     else:
         return redirect('store')
 
-
-
-
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from .models import Order, Wallet, OrderProduct
-from carts.models import CartItem
-from accounts.models import UserAddress
-from django.db.models import Q
 
 @login_required
 def wallet_payment(request):
