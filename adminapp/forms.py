@@ -1,4 +1,3 @@
-# orders/forms.py
 from django import forms
 from carts.models import Coupon
 from django.forms.widgets import DateTimeInput
@@ -15,19 +14,18 @@ class DateRangeForm(forms.Form):
     start_date = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
     end_date = forms.DateField(required=False, widget=forms.TextInput(attrs={'type': 'date'}))
 
-
 class CouponForm(forms.ModelForm):
     valid_from = forms.DateTimeField(widget=DateTimeInput(attrs={
         'class': 'form-control datetimepicker-input',
-        'data-target': '#datetimepicker1'
+        'data-target': '#datetimepicker1',
+        'autocomplete': 'off'
     }))
     valid_to = forms.DateTimeField(widget=DateTimeInput(attrs={
         'class': 'form-control datetimepicker-input',
-        'data-target': '#datetimepicker2'
+        'data-target': '#datetimepicker2',
+        'autocomplete': 'off'
     }))
 
     class Meta:
         model = Coupon
         fields = ['code', 'discount', 'valid_from', 'valid_to', 'active']
-
-

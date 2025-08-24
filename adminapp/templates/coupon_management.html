@@ -11,7 +11,7 @@
         background-color: white;
         color: white;
     }
-    .mainbody{
+    .mainbody {
         background-color: #3a3f43;
         color: white;
     }
@@ -25,8 +25,11 @@
         justify-content: center;
         margin-top: 20px;
     }
+    .datetimepicker-input {
+        background-color: #fff;
+        color: #333;
+    }
 </style>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +37,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Management</title>
+    <!-- Bootstrap 4 CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tempus Dominus CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.39.0/build/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet">
+    <!-- Font Awesome for calendar icon -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body class="mainbody">
     
@@ -60,12 +68,6 @@
             <div class="col-md-5">
                 <h4 style="color: white;">Create Coupon</h4>
 
-                <!-- <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary" style="color: white;">Create Coupon</button>
-                </form> -->
-
                 <form method="post">
                     {% csrf_token %}
                     <div class="form-row">
@@ -87,15 +89,24 @@
                     <div class="form-row">
                         <div class="col">
                             <div class="form-group">
-                                <label for="id_valid_from">Valid From :</label>
-                                {{ form.valid_from }}
+                                <label for="id_valid_from">Valid From:</label>
+                                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                    {{ form.valid_from }}
+                                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
                         <div class="col">
                             <div class="form-group">
-                                <label for="id_valid_to">Valid To :</label>
-                                {{ form.valid_to }}
+                                <label for="id_valid_to">Valid To:</label>
+                                <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                                    {{ form.valid_to }}
+                                    <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -148,9 +159,56 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <!-- JavaScript Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tempusdominus-bootstrap-4@5.39.0/build/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <script>
+        jQuery(document).ready(function($) {
+            // Check if datetimepicker is available
+            if (typeof $.fn.datetimepicker === 'undefined') {
+                console.error('DateTimePicker is not loaded. Check if Tempus Dominus, Moment.js, and dependencies are included correctly.');
+                return;
+            }
+
+            // Initialize DateTimePicker for valid_from
+            $('#datetimepicker1').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm:ss',
+                sideBySide: true,
+                icons: {
+                    time: 'fas fa-clock',
+                    date: 'fas fa-calendar',
+                    up: 'fas fa-arrow-up',
+                    down: 'fas fa-arrow-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check',
+                    clear: 'fas fa-trash',
+                    close: 'fas fa-times'
+                }
+            });
+
+            // Initialize DateTimePicker for valid_to
+            $('#datetimepicker2').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm:ss',
+                sideBySide: true,
+                icons: {
+                    time: 'fas fa-clock',
+                    date: 'fas fa-calendar',
+                    up: 'fas fa-arrow-up',
+                    down: 'fas fa-arrow-down',
+                    previous: 'fas fa-chevron-left',
+                    next: 'fas fa-chevron-right',
+                    today: 'fas fa-calendar-check',
+                    clear: 'fas fa-trash',
+                    close: 'fas fa-times'
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 

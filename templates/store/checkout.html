@@ -99,7 +99,18 @@
                             </tbody>
                         </table>
                         
-                        <button type="submit" name="submit" class="btn btn-primary btn-block">Place order</button>
+                        {% if is_available %}
+
+                            {% if has_insufficient_stock %}
+                                <h5 class="text-danger text-center mt-3">Insufficient Quantity in Stock</h5>
+                            {% else %}
+                                <button type="submit" name="submit" class="btn btn-primary btn-block">Place Order</button>
+                            {% endif %}
+
+                        {% else %}
+                            <h5 class="text-danger text-center mt-3">Product is not available</h5>
+                        {% endif %}
+
                         <a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
                         </form>
                     </div> <!-- card-body.// -->

@@ -38,12 +38,12 @@
                         <td> 
                             <div class="col"> 
                                 <div class="input-group input-spinner">
-                                    <div class="input-group-prepend">
-                                        <a href="#" class="btn btn-light btn-decrease" id="btn-decrease-{{ cart_item.product.id }}" data-url="{% url 'remove_cart' cart_item.product.id %}" type="button"> <i class="fa fa-minus"></i> </a>
-                                    </div>
-                                    <input type="text" class="form-control input-quantity" id="input-quantity-{{ cart_item.product.id }}" value="{{ cart_item.quantity }}" readonly>
                                     <div class="input-group-append">
                                         <a href="#" class="btn btn-light btn-increase" id="btn-increase-{{ cart_item.product.id }}" data-url="{% url 'add_cart' cart_item.product.id %}" type="button"> <i class="fa fa-plus"></i> </a>
+                                    </div>
+                                    <input type="text" class="form-control input-quantity" id="input-quantity-{{ cart_item.product.id }}" value="{{ cart_item.quantity }}" readonly>
+                                    <div class="input-group-prepend">
+                                        <a href="#" class="btn btn-light btn-decrease" id="btn-decrease-{{ cart_item.product.id }}" data-url="{% url 'remove_cart' cart_item.product.id %}" type="button"> <i class="fa fa-minus"></i> </a>
                                     </div>
                                 </div>
                             </div>
@@ -111,7 +111,20 @@
                 <p class="text-center mb-3" style="margin-top: 10px;">
                     <img src="{% static 'images/misc/payments.png' %}" height="26">
                 </p>
-                <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a>
+
+                {% if is_available %}
+
+                    {% if has_insufficient_stock %}
+                        <h5 class="text-danger text-center mt-3">Insufficient Quantity in Stock</h5>
+                    {% else %}
+                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-block">Checkout</a>
+                    {% endif %}
+
+                {% else %}
+                <h5 class="text-danger text-center mt-3">Product is not available</h5>
+                {% endif %}
+                <!-- <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Checkout </a> -->
+                
                 <a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
             </div>
         </div>

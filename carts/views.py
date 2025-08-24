@@ -40,11 +40,48 @@ def add_cart(request, product_id):
     Wishlist.objects.filter(user=request.user, product=product).delete()
     cart.save()
     
+    # try:
+    #     cart_item = CartItem.objects.get(product=product, cart=cart)
+    #     cart_item.quantity += 1
+    #     cart_item.save()
+    # except CartItem.DoesNotExist:
+    #     cart_item = CartItem.objects.create(
+    #         product=product,
+    #         quantity=1,
+    #         cart=cart,
+    #         user=current_user
+    #     )
+    #     cart_item.save()
+    
     try:
-        cart_item = CartItem.objects.get(product=product, cart=cart)
+        cart_item = CartItem.objects.get(product=product, cart=cart, user=current_user)
+        # Check if increasing quantity would exceed stock
+        if cart_item.quantity + 1 > product.stock:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'error': f'Insufficient stock for {product.product_name}. Available: {product.stock}',
+                    'quantity': cart_item.quantity,
+                    'sub_total': cart_item.sub_total(),
+                    'total': cart.total_amount(),
+                    'grand_total': cart.total_amount() - (cart.coupon.discount if cart.coupon else 0),
+                    'discount': cart.coupon.discount if cart.coupon else 0,
+                }, status=400)
+            return redirect('cart')  # Redirect to cart if non-AJAX request
         cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
+        # Check if stock is sufficient for new item
+        if product.stock < 1:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'error': f'Insufficient stock for {product.product_name}. Available: {product.stock}',
+                    'quantity': 0,
+                    'sub_total': 0,
+                    'total': cart.total_amount(),
+                    'grand_total': cart.total_amount() - (cart.coupon.discount if cart.coupon else 0),
+                    'discount': cart.coupon.discount if cart.coupon else 0,
+                }, status=400)
+            return redirect('cart')
         cart_item = CartItem.objects.create(
             product=product,
             quantity=1,
@@ -141,6 +178,8 @@ def apply_coupon(request):
             coupon = Coupon.objects.get(
                 code=code,
                 active=True,
+                valid_from__lte=timezone.now(),
+                valid_to__gte=timezone.now()
             )
 
             cart.coupon = coupon
@@ -158,7 +197,7 @@ def apply_coupon(request):
             })
 
         except Coupon.DoesNotExist:
-            # No coupon — just return the regular totals
+            # No coupon or invalid/expired — just return the regular totals
             grand_total = total
             return JsonResponse({
                 'total': total,
@@ -210,9 +249,18 @@ def cart(request, total=0, quantity=0, cart_items=None):
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        has_insufficient_stock = False
+        is_available = True
+        
         for cart_item in cart_items:
             total += (cart_item.product.price * cart_item.quantity)
             quantity += cart_item.quantity
+            # Check if any cart item exceeds product stock
+            if cart_item.quantity > cart_item.product.stock:
+                has_insufficient_stock = True
+            # If any product is unavailable, set is_available to False
+            if not cart_item.product.is_available:
+                is_available = False
         
         discount = 0
         grand_total = total
@@ -228,6 +276,8 @@ def cart(request, total=0, quantity=0, cart_items=None):
         coupon = None
         discount = 0
         grand_total = total
+        has_insufficient_stock = False
+        is_available = True
 
     context = {
         'total': total,
@@ -236,6 +286,8 @@ def cart(request, total=0, quantity=0, cart_items=None):
         'cart_items': cart_items,
         'coupon': coupon,
         'discount': discount,
+        'has_insufficient_stock': has_insufficient_stock,
+        'is_available' : is_available,
     }
 
     return render(request, 'store/cart.html', context)
@@ -250,20 +302,34 @@ def checkout(request):
     total = 0
     quantity = 0
     discount = 0
-
+    has_insufficient_stock = False
+    is_available = True
+    
     # Get cart_id from session or create a new cart if none exists
     cart_id = _cart_id(request)  # Assuming _cart_id function is used to get the cart ID
     try:
         cart = Cart.objects.get(cart_id=cart_id)
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        
+        # Remove unavailable products from cart
+        for cart_item in cart_items:
+            if not cart_item.product.is_available:
+                cart_item.delete()  # Remove the cart item if product is unavailable
+                is_available = False
+        
+        # Refresh cart_items after deletions
+        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        
+        # Calculate sub_total, total, quantity and check stock
+        for cart_item in cart_items:
+            sub_total += (cart_item.product.price * cart_item.quantity)
+            quantity += cart_item.quantity
+            total += cart_item.sub_total()
+            if cart_item.quantity > cart_item.product.stock:
+                has_insufficient_stock = True
+            
     except Cart.DoesNotExist:
         cart = None
-
-    # Calculate sub_total, total, quantity
-    for cart_item in cart_items:
-        sub_total += (cart_item.product.price * cart_item.quantity)
-        quantity += cart_item.quantity
-        total += cart_item.sub_total()
 
     # Handle coupons and discounts
     grand_total = total
@@ -294,6 +360,8 @@ def checkout(request):
         'discount': discount,
         'addresses': addresses,
         'selected_address': selected_address,
+        'has_insufficient_stock': has_insufficient_stock,
+        'is_available': is_available,
     }
     
     return render(request, 'store/checkout.html', context)

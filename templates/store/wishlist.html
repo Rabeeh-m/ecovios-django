@@ -3,6 +3,7 @@
 {% block content %}
 <div class="container">
     <h2>My Wishlist</h2>
+    {% if wishlists %}
     <div class="row">
         {% for item in wishlists %}
         <div class="col-md-3">
@@ -14,12 +15,24 @@
                     <h5 class="card-title">{{ item.product.product_name }}</h5>
                     <p class="card-text">₹ {{ item.product.price }}</p>
                     <a href="{% url 'remove_from_wishlist' item.product.id %}" class="btn btn-danger">Remove from Wishlist <i class="fas fa-heart-broken"></i></a>
-                    <a href="{% url 'add_cart' item.product.id %}" class="btn  btn-primary mt-2"> <span class="text">Add to Cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+                    {% if item.product.is_available %}
+                    <a href="{% url 'add_cart' item.product.id %}" class="btn btn-primary mt-2"> <span class="text">Add to Cart</span> <i class="fas fa-shopping-cart"></i> </a>
+                    {% else %}
+                    <h5 class="text-danger mt-2">Product is not available</h5>
+                    {% endif %}
                 </div>
-                
             </div>
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-info text-center" role="alert">
+                Your wishlist is empty. Start adding products to your wishlist!
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

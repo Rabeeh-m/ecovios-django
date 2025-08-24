@@ -29,26 +29,6 @@ def place_order(request):
     total = 0
     quantity = 0
 
-    # Check if the 'buy_now' product is in the session
-    buy_now_product_id = request.session.get('buy_now_product_id')
-    if buy_now_product_id:
-        try:
-            product = Product.objects.get(id=buy_now_product_id)
-            cart_item, created = CartItem.objects.get_or_create(
-                user=current_user,
-                product=product,
-                is_active=True,
-                defaults={'quantity': 1}
-            )
-            if not created:
-                cart_item.quantity += 1
-                cart_item.save()
-            # Clear the 'buy_now' product ID from the session
-            request.session.pop('buy_now_product_id', None)
-        except Product.DoesNotExist:
-            messages.error(request, 'Product not found.')
-            return redirect('store')
-
     # Get all cart items for the current user
     cart_items = CartItem.objects.filter(user=current_user, is_active=True)
     cart_count = cart_items.count()
@@ -113,9 +93,23 @@ def cod(request):
     
     cart_items = CartItem.objects.filter(user=current_user)
     total=0
+    has_insufficient_stock = False
+    is_available = True
+    
+    # Remove unavailable products from cart
+    for cart_item in cart_items:
+        if not cart_item.product.is_available:
+            cart_item.delete()  # Remove the cart item if product is unavailable
+            is_available = False
+    
+    # Refresh cart_items after deletions
+    cart_items = CartItem.objects.filter(user=current_user)
+    
     for cart_item in cart_items:
         total += (cart_item.product.price * cart_item.quantity)
-        
+        if cart_item.quantity > cart_item.product.stock:
+            has_insufficient_stock = True
+            
     try:
         cart = Cart.objects.filter(cartitem__user=current_user).first()
     except Cart.DoesNotExist:
@@ -162,8 +156,9 @@ def cod(request):
         'order_total' : order_total,
         'discount' : discount,
         'grand_total': grand_total,
-        'wallet_balance' : wallet_balance
-        
+        'wallet_balance' : wallet_balance,
+        'has_insufficient_stock': has_insufficient_stock,
+        'is_available': is_available,
     }
 
     return render(request, 'orders/cod.html', context)
@@ -631,47 +626,8 @@ def download_invoice(request, order_number):
     return response
 
 
-
 def payment_failed(request):    
     return render(request, 'orders/payment_failed.html')
-
-
-# orders/views.py
-from django.shortcuts import redirect, get_object_or_404
-from store.models import Product
-from carts.models import Cart, CartItem
-
-def buy_now(request):
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        if not product_id:
-            return redirect('store')  # Redirect if no product ID is provided
-
-        product = get_object_or_404(Product, id=product_id)
-        cart_id = request.session.get('cart_id')
-
-        if not cart_id:
-            cart_id = _cart_id(request)
-            request.session['cart_id'] = cart_id
-
-        try:
-            cart = Cart.objects.get(cart_id=cart_id)
-        except Cart.DoesNotExist:
-            cart = Cart.objects.create(cart_id=cart_id)
-        
-        cart_item, created = CartItem.objects.get_or_create(
-            cart=cart,
-            product=product,
-            defaults={'quantity': 1}
-        )
-
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
-
-        return redirect('checkout')
-    else:
-        return redirect('store')
 
 
 @login_required

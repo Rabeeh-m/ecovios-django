@@ -88,25 +88,33 @@
                         <p class="text-center mb-3">
                             <img src="{% static './images/misc/payments.png' %}" height="26">
                         </p>
-                        {% if grand_total > 1000 %}
-                        <div >
-                            <a href="{% url 'confirm_order' %}" class="btn btn-success btn-block">Cash on Delivery</a>
-                        </div>
-                        <br>
+
+                        {% if is_available %}
+
+                            {% if has_insufficient_stock %}
+                                <h5 class="text-danger text-center mt-3">Insufficient Quantity in Stock</h5>
+                            {% else %}
+                                {% if grand_total > 1000 %}
+                                <div>
+                                    <a href="{% url 'confirm_order' %}" class="btn btn-success btn-block">Cash on Delivery</a>
+                                </div>
+                                <br>
+                                {% endif %}
+                                {% if wallet_balance >= grand_total %}
+                                <div class="mb-3">
+                                    <a href="{% url 'wallet_payment' %}" class="btn btn-danger btn-block">Pay with Wallet</a>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <div id="paypal-button-container"></div>
+                                </div>
+                            {% endif %}
+
+                        {% else %}
+                            <h5 class="text-danger text-center mt-3">Product is not available</h5>
                         {% endif %}
-                        {% if wallet_balance >= grand_total %}
-                        <div class="mb-3">
-                            <a href="{% url 'wallet_payment' %}" class="btn btn-danger btn-block">
-                                Pay with Wallet
-                            </a>
-                        </div>
-                        {% endif %}
-                        <div>
-                            <div id="paypal-button-container">
-                        </div>
-                        
-                            <!--paypal button will load here-->
-                        </div>
+
+
                     </div> <!-- card-body.// -->
                 </div> <!-- card.// -->
             </aside> <!-- col.// -->

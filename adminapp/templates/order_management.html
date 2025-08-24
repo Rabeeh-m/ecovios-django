@@ -84,16 +84,11 @@
                                 <option value="Shipped" {% if order.status == "Shipped" %}selected{% endif %}>Shipped</option>
                                 <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered</option>
                                 <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
-                                <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Return</option>
+                                
                             </select>
                             <button type="submit" name="action" value="update_status" class="btn btn-info btn-sm">Update Status</button>
                         </form>
-                        <!-- Cancel Order -->
-                        <!-- <form method="POST" style="display:inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="order_id" value="{{ order.id }}">
-                            <button type="submit" name="action" value="cancel" class="btn btn-danger btn-sm">Cancel</button>
-                        </form> -->
+                       
                         <a href="{% url 'order_details' order.id %}" class="btn btn-primary btn-sm">Order Details</a>
                     </td>
                 </tr>

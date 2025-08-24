@@ -85,9 +85,10 @@
 						<p>{{ single_product.description }}</p>
 
 						<hr>
-						{% if single_product.stock <= 0 %} <h5 class="text-danger">Out of stock</h5>
-							{% else %}
-							
+						{% if single_product.is_available %}
+						{% if single_product.stock <= 0 %} 
+							<h5 class="text-danger">Out of stock</h5>
+						{% else %}
 							{% if in_cart %}
 							<a href="#" class="btn  btn-success"> <span class="text">Added to Cart</span> <i class="fas fa-check"></i> </a>
 							<a href="{% url 'cart' %}" class="btn  btn-outline-primary"> <span class="text">View Cart</span> <i class="fas fa-eye"></i> </a>
@@ -108,14 +109,10 @@
 									<i class="fas fa-heart"></i> 
 								</button>
 							{% endif %}
-
-
-							<form method="post" action="{% url 'product_detail' category_slug=single_product.category.slug product_slug=single_product.slug %}">
-								{% csrf_token %}
-								<button type="submit" name="buy_now" class="btn btn-warning mt-2">Buy Now</button>
-							</form>
-
-							{% endif %}
+						{% endif %}
+						{% else %}
+                            <h5 class="text-danger">Product is not available</h5>
+                        {% endif %}
 				
 
 					</article> <!-- product-info-aside .// -->

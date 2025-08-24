@@ -16,7 +16,6 @@ urlpatterns = [
     path('wallet/', views.wallet_view, name='wallet'),
     path('download_invoice/<str:order_number>/', views.download_invoice, name='download_invoice'),
     path('payment-failed/', views.payment_failed, name='payment_failed'),
-    path('buy_now/', views.buy_now, name='buy_now'),
     path('wallet_payment/', views.wallet_payment, name='wallet_payment'),
     path('wallet_order/', views.wallet_order, name='wallet_order'),
 ] 

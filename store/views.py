@@ -13,6 +13,7 @@ from .forms import ReviewForm
 from django.contrib import messages
 from django.shortcuts import Http404
 from carts.models import CartItem, Cart
+from django.http import JsonResponse
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -194,12 +195,6 @@ def remove_from_wishlist(request, product_id):
     return redirect('product_detail', product.category.slug, product.slug)
 
 
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import cache_control
-from .models import Wishlist, Product
-
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='login')
 def toggle_wishlist(request):
@@ -222,6 +217,7 @@ def toggle_wishlist(request):
 @login_required(login_url='login')
 def wishlist(request):
     wishlists = Wishlist.objects.filter(user=request.user)
+    # wishlists = Wishlist.objects.filter(user=request.user, product__is_available=True)
     context = {
         'wishlists': wishlists,
     }
