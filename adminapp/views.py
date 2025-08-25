@@ -419,12 +419,23 @@ def manage_orders(request):
             current_status_index = status_order.index(order.status)
             new_status_index = status_order.index(new_status)
             
-            if new_status_index >= current_status_index:
-                order.status = new_status
-                order.save()
-                messages.success(request, 'Order status updated successfully.')
+            # Check if the new status is 'Return'
+            if new_status == 'Return':
+                if order.status != 'Delivered':
+                    messages.error(request, 'Order can only be returned after it has been delivered.')
+                else:
+                    order.status = new_status
+                    order.save()
+                    messages.success(request, 'Order status updated to Return successfully.')
             else:
-                messages.error(request, 'Invalid status update. You can only move to a forward status.')
+                # Existing logic for other status updates
+                if new_status_index >= current_status_index:
+                    order.status = new_status
+                    order.save()
+                    messages.success(request, 'Order status updated successfully.')
+                else:
+                    messages.error(request, 'Invalid status update. You can only move to a forward status.')
+                    
         elif action == 'cancel':
             order.status = 'Cancelled'
             order.save()

@@ -84,7 +84,10 @@
                                 <option value="Shipped" {% if order.status == "Shipped" %}selected{% endif %}>Shipped</option>
                                 <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered</option>
                                 <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
-                                
+                                <!-- <option value="Return" {% if order.status == "Return" %}selected{% endif %}>Return</option> -->
+                                {% if order.status == "Delivered" %}
+                                    <option value="Return" {% if order.status == "Return" %}selected{% endif %}>Return</option>
+                                {% endif %}
                             </select>
                             <button type="submit" name="action" value="update_status" class="btn btn-info btn-sm">Update Status</button>
                         </form>
