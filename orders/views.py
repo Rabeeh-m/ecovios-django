@@ -185,16 +185,13 @@ def confirm_order(request):
             if cart.coupon:
                 discount = cart.coupon.discount
         grand_total = total - discount
-        # if cart and cart.coupon:
-        #     discount = cart.coupon.discount
-        #     grand_total = total - discount
 
-        # Update the order total with the discounted price
         order.order_total = total
         
     except Cart.DoesNotExist:
         cart = None
-
+        discount = 0
+        grand_total = total
     
     delivery_charge = 50
     grand_total = grand_total + delivery_charge
@@ -203,6 +200,7 @@ def confirm_order(request):
     order.is_ordered = True
     order.status = 'Completed'
     order.order_total = grand_total
+    order.coupon_amount = discount
     order.save()
     
     cart_items = CartItem.objects.filter(user=current_user)
@@ -247,7 +245,9 @@ def confirm_order(request):
         'expected_delivery_date': expected_delivery_date,
         'ordered_products': ordered_products,
         'total' : total,
-        'grand_total' : grand_total
+        'grand_total' : grand_total,
+        'delivery_charge': delivery_charge,
+        'coupon_discount': discount
     }
     
     return render(request, 'orders/confirm_order.html', context)
@@ -637,8 +637,15 @@ def wallet_payment(request):
     cart_items = CartItem.objects.filter(user=user)
     total = sum(item.sub_total() for item in cart_items)  # Call sub_total as a method
     
-    # Assuming you have logic to calculate discount; if not, set it to 0
-    discount = Decimal('0') 
+    # Retrieve coupon discount from Cart
+    try:
+        cart = Cart.objects.filter(cartitem__user=user).first()
+        discount = Decimal('0')
+        if cart and cart.coupon:
+            discount = cart.coupon.discount
+    except Cart.DoesNotExist:
+        discount = Decimal('0')
+    
     delivery_charge = Decimal('50')
     grand_total = (total - discount) + 50  # Assuming 50 is the delivery charge
     wallet_balance = Wallet.objects.get(user=user).total_amount
@@ -670,8 +677,15 @@ def wallet_order(request):
     # Calculate total
     total = sum(item.sub_total() for item in cart_items)
     
-    # Assuming you have logic to calculate discount; if not, set it to 0
-    discount = Decimal('0')
+    # Retrieve coupon discount from Cart
+    try:
+        cart = Cart.objects.filter(cartitem__user=user).first()
+        discount = Decimal('0')
+        if cart and cart.coupon:
+            discount = cart.coupon.discount
+    except Cart.DoesNotExist:
+        discount = Decimal('0')
+        
     delivery_charge = Decimal('50')
     grand_total = (total - discount) + 50  # Assuming 50 is the delivery charge
     wallet = Wallet.objects.get(user=user)
@@ -739,6 +753,7 @@ def wallet_order(request):
             'grand_total': grand_total,
             'ordered_products': ordered_products,
             'payment': payment,
+            'coupon_discount': discount  
         }
 
         return render(request, 'orders/confirm_order.html', context)

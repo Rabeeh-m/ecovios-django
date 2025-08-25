@@ -27,10 +27,12 @@
                     <div class="card-body">
                         <p class="card-text mb-2"><strong>Order Number:</strong> {{ order.order_number }}</p>
                         <p class="card-text mb-2"><strong>Order Date:</strong> {{ order.created_at }}</p>
-                        <p class="card-text mb-2"><strong>Total Amount:</strong> ₹ {{ order.order_total }}</p>
+                        <p class="card-text mb-2"><strong>Subtotal:</strong> ₹ {{ total }}</p>
+                        <p class="card-text mb-2"><strong>Discount:</strong> ₹ {{ coupon_discount }}</p>
+                        <p class="card-text mb-2"><strong>Delivery Charge:</strong> ₹ {{ delivery_charge }}</p>
+                        <p class="card-text mb-2"><strong>Grand Total:</strong> ₹ {{ grand_total }}</p>
                     </div>
                 </div>
-                
             </aside>
             <aside class="col-lg-6">
                 <div class="card mb-3">
@@ -63,7 +65,7 @@
                                     <td>
                                         <div class="price-wrap">
                                             <var class="price">₹ {{ product.sub_total }}</var>
-                                            <small class="text-muted" >₹ {{ product.product.price }} each</small>
+                                            <small class="text-muted" >₹ {{ product.product_price }} each</small>
                                         </div>
                                     </td>
                                 </tr>
